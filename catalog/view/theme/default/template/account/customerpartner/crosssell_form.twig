@@ -1,0 +1,509 @@
+{{ header }}{{ separate_column_left }}
+{% set product_row = 0 %}
+{% if (separate_view is defined and separate_view) %}
+  <div class="container-fluid" id="content">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+    {% endfor %}
+  </ul>
+  {% if (error_warning) %}
+  <div class="alert alert-danger"><i class="fa fa-exclaimation-circle"></i> {{ error_warning }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+    {% if (column_left and column_right) %}
+    {% set class = 'col-sm-6' %}
+    {% elseif (column_left or column_right) %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">{{ content_top }}
+
+      <h1 class="heading-title">{{ heading_title_insert }}
+        <div class="pull-right btn-group">
+          {% if (crosssell_allowed and wkIsMember) %}
+          <button type="button" onclick="$('#form-crosssell').submit();" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+          {% endif %}
+          <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+      </h1>
+      {% if (wkIsMember) %}
+      {% if (crosssell_allowed) %}
+      <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-crosssell" class="form-horizontal">
+        <br />
+        <fieldset>
+          <legend>{{ text_display_position }}</legend>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-parent-products"><span data-toggle="tooltip" title="{{ help_set_to_product }}">{{ entry_set_to_product }}</span></label>
+            <div class="col-sm-10" id="parent_option_append">
+              <input type="text" value="{{ parent_prods['parent_name'] }}" placeholder="{{ entry_add_product }}" id="input-parent-products" class="form-control" />
+              <input type="hidden" name="parent_products" value="{{ parent_prods['parent_name'] }}" />
+              <input type="hidden" name="parent_id" value="{{ parent_prods['parent_id'] }}">
+              <input type="hidden" name="parent_option" value='{{ parent_prods["parent_options"] }}'>
+              <input type="hidden" name="parent_option_name" value="{{ parent_prods['parent_options_name'] }}">
+              <div id="parent_options">
+                {% if (parent_prods['parent_options_name'] is defined and parent_prods['parent_options_name']) %}
+                    <i class="fa fa-minus-circle"></i>
+                {% endif %}
+                {{ parent_prods['parent_options_name'] }}
+              </div>
+              {% if (error_product_parent) %}
+              <div class="text-danger">{{ error_product_parent }}</div>
+              {% endif %}
+            </div>
+           </div>
+         </fieldset>
+         <fieldset>
+          <legend>{{ text_product_crosssell }}</legend>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-child-products"><span data-toggle="tooltip" title="{{ help_crosssell_products }}">{{ entry_add_product }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="child_products" value="" placeholder="{{ entry_add_product }}" id="input-child-products" class="form-control" />
+              <div id="vendor-child-products" class="well well-sm" style="height: 250px; overflow: auto;">
+                {% set class = 'odd' %}
+                {% set product_row = 0 %}
+                {% for child_key,child_prod in child_prods %}
+                {% set class = class == 'even' ? 'odd' : 'even' %}
+                <div id="vendor-child-products{{ product_row }}" class="{{ class }}">
+                  <i class="fa fa-minus-circle"></i> {{ child_prod['child_name'] ~ ' ('~ child_prod['child_price'] ~') ' }}
+                  <input type="text" name="price_child[{{ product_row }}]" value="{{ child_prod['bundle_price'] }}" placeholder="{{ text_bundle_price }}" onkeypress="return validate(event, this);" />
+                  <input type="hidden" name="name_child[{{ product_row }}]" value="{{ child_prod['child_name'] }}" />
+                  <input type="hidden" name="product_child[{{ product_row }}]" value="{{ child_prod['child_id'] }}" />
+                  <img src="{{ child_prod['thumb'] }}" class="img-thumbnail"/>
+                  <input type="hidden" name="bundle_photo[{{ product_row }}]" value="{{ child_prod['image'] }}" />
+                  <input type="hidden" name="bundle_option[{{ product_row }}]" value='{{ child_prod["product_option"] }}' />
+                  <input type="hidden" name="bundle_option_name[{{ product_row }}]" value="{{ child_prod['product_option_name'] }}" />
+                  {{ child_prod['product_option_name'] }}
+                </div>
+                {% if (error_product_childs and error_product_childs[child_prod['child_id']] is defined) %}
+                <div class="text-danger">{{ error_expired }}</div>
+                {% endif %}
+                {% set product_row = product_row + 1 %}
+                {% endfor %}
+              </div>
+              {% if (error_product_child) %}
+              <div class="text-danger">{{ error_product_child }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          {% if (countdown_allowed) %}
+          <legend>{{ text_countdown }}</legend>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-countdown-status"><span data-toggle="tooltip" data-original-title="{{ help_countdown_status }}">{{ entry_countdown_status }}</span></label>
+            <div class="col-sm-10">
+              <select name="countdown_status" id="input-status" class="form-control">
+                {% if (countdown_status) %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          {% endif %}
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-countdown-format"><span data-toggle="tooltip" data-original-title="{{ help_date }}">{{ entry_date }}</span></label>
+            <div class="col-sm-10">
+              <label class="radio">
+                {{ entry_from_date }}
+              </label>
+              <div class="input-group col-sm-6 mkdate">
+                <input type="text" name="date_start" value="{{ date_start }}" placeholder="{{ entry_from_date }}" data-date-format="YYYY-MM-DD HH:mm" id="input-date-available" class="form-control" readonly="readonly" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+              {% if (error_date_start) %}
+              <div class="text-danger">{{ error_date_start }}</div>
+              {% endif %}
+              <label class="radio">
+                {{ entry_to_date }}
+              </label>
+              <div class="input-group col-sm-6 mkdate">
+                <input type="text" name="date_end" value="{{ date_end }}" placeholder="{{ entry_to_date }}" data-date-format="YYYY-MM-DD HH:mm" id="input-date-available" class="form-control" readonly="readonly" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+              {% if (error_date_end) %}
+              <div class="text-danger">{{ error_date_end }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </fieldset>
+        {% if (units_allowed) %}
+        <fieldset>
+          <legend>{{ text_units }}</legend>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-units-status"><span data-toggle="tooltip" data-original-title="{{ help_units_status }}">{{ entry_units_status }}</span></label>
+            <div class="col-sm-10">
+              <select name="quantity_status" id="input-units-status" class="form-control">
+                {% if (quantity_status) %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-units-available"><span data-toggle="tooltip" data-original-title="{{ help_units_available }}">{{ entry_units_available }}</span></label>
+            <div class="col-sm-10">
+              <input type="number" name="quantity" value="{{ quantity }}" onkeypress="return validateQuant(event);" placeholder="{{ entry_units_available }}" min="0" id="input-units-available" class="form-control" {% if (not quantity_status) %} {{ "disabled" }} {% endif %} />
+              {% if (error_quantity) %}
+              <div class="text-danger">{{ error_quantity }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </fieldset>
+        {% endif %}
+      </form>
+      {% endif %}
+      <div id="product_option" class="modal fade" role="dialog" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h3 class="modal-title">Select option of this product</h3>
+            </div>
+            <div class="modal-body" style="margin: 0 7%;">
+              <div class="form-horizontal">
+                <div class="form-group" id="parent-options">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer" style="text-align: center;">
+              <input type="button" class="btn btn-primary" id="submit-options" value="Submit" product-type="">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button data-toggle="modal" data-target="#product_option" class="btn btn-primary" style="display: none;" id="product_option_button" type="button"><i class="fa fa-plus"></i></button>
+      {% else %}
+        <div class="text-danger">{{ error_membership_access }}</div>
+      {% endif %}
+    {{ content_bottom }}</div>
+  {{ column_right }}</div>
+</div>
+<style>
+#form-crosssell .dropdown-menu {
+  max-height: 350px;
+  overflow-y: scroll;
+}
+#vendor-child-products input[type=text] {
+  width: 15%;
+  display: inline-block;
+}
+</style>
+<script type="text/javascript">
+$('.mkdate').datetimepicker();
+
+$('.mkdate .btn-default').on('click', function () {
+  $('body .bootstrap-datetimepicker-widget').hide();
+})
+
+// $(document).on('click', 'body #parent-options .date .btn-default', function () {
+//   $('body .bootstrap-datetimepicker-widget').hide();
+// })
+
+// child_products
+
+var product_id = '';
+var toappend = '';
+var product_row = {{ product_row }};
+$('input[name=\'child_products\']').autocomplete({
+  minLength: 0,
+  delay: 101,
+  source: function(request, response) {
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/crosssell/autocomplete&wk_type=cross&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['product_id'],
+            thumb: item['thumb'],
+            image: item['image'],
+            price: item['price'],
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $('input[name=\'child_products\']').val('');
+
+    product_id = item['value'];
+    getProductOptions(product_id, item, 'child');
+
+    toappend = '<div id="vendor-child-products' + product_row + '">';
+    toappend += '<i class="fa fa-minus-circle"></i> ';
+    toappend += item['label'];
+    toappend += '<input type="text" name="price_child[' + product_row + ']" value="" placeholder="{{ text_bundle_price }}" onkeypress="return validate(event, this);" />';
+    toappend += '<input type="hidden" name="name_child[' + product_row + ']" value="' + item['label'] + '" />';
+    toappend += '<input type="hidden" name="product_child[' + product_row + ']" value="' + item['value'] + '" />';
+    toappend += '<img src="' + item['thumb'] + '" class="img-thumbnail"/>';
+    toappend += '<input type="hidden" name="bundle_photo[' + product_row + ']" value="' + item['image'] + '" />';
+    toappend += '<input type="hidden" name="bundle_option[' + product_row + ']" value=""/>';
+    toappend += '<input type="hidden" name="bundle_option_name[' + product_row + ']" value=""/>';
+    toappend += '</div>';
+
+    $('#vendor-child-products div:odd').attr('class', 'odd');
+    $('#vendor-child-products div:even').attr('class', 'even');
+    return false;
+  },
+  focus: function(item) {
+    return false;
+  }
+});
+$('#parent_options').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().html('');
+  $('#input-parent-products').val('');
+  $('#parent_option_append input[name=\'parent_products\']').val('');
+  $('#parent_option_append input[name=\'parent_id\']').val('');
+  $('#parent_option_append input[name=\'parent_option\']').val('');
+  $('#parent_option_append input[name=\'parent_option_name\']').val('');
+});
+$('#vendor-child-products').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+  $('#vendor-child-products div:odd').attr('class', 'odd');
+  $('#vendor-child-products div:even').attr('class', 'even');
+});
+
+// parent_products
+$('#input-parent-products').autocomplete({
+  minLength: 0,
+  delay: 101,
+  source: function(request, response) {
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/crosssell/autocomplete&wk_type=cross&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['product_id']
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $(".parent_option_appended").remove();
+    var product_id = item.value;
+    getProductOptions(product_id, item);
+  },
+  focus: function(item) {
+      return false;
+   }
+});
+
+function getProductOptions(product_id, item, child) {
+  $.ajax({
+    url: 'index.php?route=account/customerpartner/product_options/getProductOptions&wk_type=cross&product_id=' +  product_id,
+    beforeSend: function () {
+      if (child) {
+        $('#input-child-products').after('<i class="fa fa-spin fa-spinner"></i>');
+      } else {
+        $('#input-parent-products').after('<i class="fa fa-spin fa-spinner"></i>');
+      }
+    },
+    success: function(data) {
+      $('.fa-spinner').remove();
+      if(data) {
+        $("#product_option_button").trigger("click");
+        if (child) {
+          var product_detail  = '<input type="hidden" value="' + item['value'] + '" id="child_product_id">';
+              product_detail += '<input type="hidden" value="' + item['label'] + '" id="child_product">';
+          $('#submit-options').attr('product-type', 'c');
+        } else {
+          var product_detail  = '<input type="hidden" value="' + item['value'] + '" id="parent_product_id">';
+              product_detail += '<input type="hidden" value="' + item['label'] + '" id="parent_product">';
+          $('#submit-options').attr('product-type', 'p');
+        }
+
+        product_detail       += data;
+
+        $('#parent-options').html(product_detail);
+
+        setTimeout(function () {
+          $('.date').datetimepicker({pickTime: false});
+          $('.time').datetimepicker({pickDate: false});
+          $('.datetime').datetimepicker({
+            pickDate: true,
+            pickTime: true
+          });
+        }, 100);
+      } else {
+        if (child) {
+          let add = true;
+          $.each($('#vendor-child-products').children(), function (key, value) {
+            var last_product_id = $(value).children('input:nth-child(4)').val();
+
+            if (last_product_id == item['value']) {
+              alert('This product has been already added!');
+              add = false;
+            }
+          });
+          if (add) {
+            $('#vendor-child-products').append(toappend);
+            product_row++;
+          }
+        } else {
+          $('#parent_options').html('');
+          $('input[name=\'parent_products\']').val(item['label']);
+          $('#input-parent-products').val(item['label']);
+          $('input[name=\'parent_id\']').val(item['value']);
+          $('input[name=\'parent_option\']').val('');
+        }
+      }
+    }
+  });
+}
+
+$("#submit-options").on('click', function() {
+  var product_type = $(this).attr('product-type');
+  if (product_type == 'p') {
+    var product_id = $("#parent_product_id").val();
+    var product_name = $("#parent_product").val();
+  } else {
+    var product_id = $("#child_product_id").val();
+    var product_name = $("#child_product").val();
+  }
+
+  var html = $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea');
+
+  var optionText = '';
+
+  $.ajax({
+    url: 'index.php?route=account/customerpartner/product_options/checkOptions',
+    type: 'post',
+    dataType: 'json',
+    data: html,
+    success: function (json) {
+      $('.alert, .text-danger').remove();
+      $('.form-group').removeClass('has-error');
+
+      if (json['error']) {
+        if (json['error']['option']) {
+          for (i in json['error']['option']) {
+            var element = $('#input-option' + i.replace('_', '-'));
+
+            if (element.parent().hasClass('input-group')) {
+              element.parent().after('<div class="text-danger">' + json['error']['option'][i] + '</div>');
+            } else {
+              element.after('<div class="text-danger">' + json['error']['option'][i] + '</div>');
+            }
+          }
+        }
+
+        // Highlight any found errors
+        $('.text-danger').parent().addClass('has-error');
+      } else {
+        if (product_type == 'p') {
+          $('input[name=\'parent_products\']').val(product_name);
+          $('#input-parent-products').val(product_name);
+          $('#input-parent-products').val(json['product_name']+'('+json['cost']+')');
+          $('input[name=\'parent_products\']').val(json['product_name']+'('+json['cost']+')');
+          var add_button = '<i class="fa fa-minus-circle"></i>' + json['option_name'];
+          $('#parent_options').html(add_button);
+          $('input[name=\'parent_id\']').val(product_id);
+          $('input[name=\'parent_option\']').val(JSON.stringify(json['option']));
+          $('input[name=\'parent_option_name\']').val(json['option_name']);
+          $(".close").trigger('click');
+        } else if (product_type == 'c') {
+          let add = true;
+          $.each($('#vendor-child-products').children(), function (key, value) {
+            var last_options = $(value).children('input:nth-child(7)').val();
+            var last_product_id = $(value).children('input:nth-child(4)').val();
+
+            if (last_product_id == product_id && last_options == JSON.stringify(json['option'])) {
+              alert('Warning: This product has been already added with the same options!');
+              add = false;
+            }
+          });
+
+          if (add) {
+            $('#vendor-child-products').append(toappend);
+            var appendId = "#vendor-child-products" + product_row;
+            $(appendId).append(json['option_name']);
+            $('input[name="bundle_option[' + product_row + ']"]').val(JSON.stringify(json['option']));
+            $('input[name="bundle_option_name[' + product_row + ']"]').val(json['option_name']);
+
+            product_row++;
+            $(".close").trigger('click');
+          }
+        }
+      }
+    }
+  });
+});
+
+$("#input-units-status").on('change', function () {
+  if ($(this).val() == 1) {
+    $('#input-units-available').removeAttr('disabled');
+  } else {
+    $('#input-units-available').attr('disabled', 'disabled');
+  }
+});
+
+$(function() {
+  $("body").on("change","input[type='file']", function() {
+    $.this = this;
+    var files = !!this.files ? this.files : [];
+    if (!files.length || !window.FileReader) return; /* no file selected, or no FileReader support */
+    if (/^image/.test( files[0].type)) { /* only image file */
+      var reader = new FileReader(); /* instance of the FileReader */
+      reader.readAsDataURL(files[0]); /* read the local file */
+
+      reader.onloadend = function() { /* set image to display only */
+        src = this.result;
+        $($.this).next().attr('src',src);
+      }
+    }
+  });
+});
+
+function validateQuant(key) {
+  var keycode = (key.which) ? key.which : key.keyCode;
+
+  if (!(keycode==8 || keycode==116) && (keycode < 48 || keycode > 57)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function validate(key, thisthis) {
+  var keycode = (key.which) ? key.which : key.keyCode;
+
+  if (keycode == 46) {
+    var val = $(thisthis).val();
+
+    if (val == val.replace('.', '')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+</script>
+{{ footer }}

@@ -1,0 +1,116 @@
+{{ header }}
+<div class="container">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <div class="row">{{ column_left }}
+    {% if (column_left and column_right) %}
+    {% set class = 'col-sm-6' %}
+    {% elseif (column_left or column_right) %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">{{ content_top }}
+      <h1>
+        {{ text_view }}
+        <div class="pull-right">
+          <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_back }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+      </h1>
+      {% if (response_flag) %}
+       <div class="row">
+         <div class="col-md-6">
+           <div class="panel panel-default">
+             <div class="panel-heading">
+               <h3 class="panel-title"><i class="fa fa-shopping-cart"></i> {{ text_req_info }}</h3>
+             </div>
+             <table class="table">
+               <tbody>
+                 <tr>
+                   <td >{{ text_req_product }}</td>
+                   <td><a href="{{ product_url }}" target="_blank">{{ name }}</a></td>
+                 </tr>
+                 <tr>
+                   <td >{{ text_req_promodel }}</td>
+                   <td>{{ model }}</td>
+                 </tr>
+                 <tr>
+                   <td >{{ text_req_price }}</td>
+                   <td>{{ quote_price }}</td>
+                 </tr>
+                 <tr>
+                   <td >{{ text_req_qprice }}</td>
+                   <td>{{ price }}</td>
+                 </tr>
+                 <tr>
+                   <td >{{ text_req_pviews }}</td>
+                   <td>{{ viewed }}</td>
+                 </tr>
+                 <tr>
+                   <td >{{ text_req_total }}</td>
+                   <td>{{ requests }}</td>
+                 </tr>
+                 <tr>
+                   <td >{{ text_req_powner }}</td>
+                   <td>{% if (vendor_id) %} {{ text_seller }} {% else %} {{ text_admin }}{% endif %}</td>
+                 </tr>
+               </tbody>
+             </table>
+           </div>
+         </div>
+         <div class="col-md-6">
+           <div class="panel panel-default">
+             <div class="panel-heading">
+               <h3 class="panel-title"><i class="fa fa-user"></i> {{ text_customer_detail }}</h3>
+             </div>
+             <table class="table">
+               <tr>
+                 <td style="width: 1%;"><button data-toggle="tooltip" title="{{ column_customer }}" class="btn btn-info btn-xs"><i class="fa fa-user fa-fw"></i></button></td>
+                 <td>
+                   {{ customer_name }}
+                 </td>
+               </tr>
+               <tr>
+                 <td><button data-toggle="tooltip" title="{{ column_email }}" class="btn btn-info btn-xs"><i class="fa fa-envelope-o fa-fw"></i></button></td>
+                 <td><a href="mailto:{{ customer_email }}">{{ customer_email }}</a></td>
+               </tr>
+               <tr>
+                 <td><button data-toggle="tooltip" title="{{ column_ctype }}" class="btn btn-info btn-xs"><i class="fa fa-user fa-fw"></i></button></td>
+                 <td>{% if (customer_id) %} {{ text_register }}{% else %} {{ text_guest }} {% endif %}</td>
+               </tr>
+             </table>
+           </div>
+         </div>
+       </div>
+
+       <div class="panel panel-default">
+         <div class="panel-heading">
+           <h3 class="panel-title"><i class="fa fa-comments"></i> {{ text_req_response }}</h3>
+         </div>
+         <table class="table">
+           <body>
+             <tr>
+               <td >{{ text_response }}</td>
+               <td>{{ responded_text }}</td>
+             </tr>
+           </body>
+         </table>
+      </div>
+
+     {% else %}
+       <div class="table-responsive">
+         <table class="table table-bordered">
+           <thead>
+             no data found
+           </thead>
+         </table>
+       </div>
+     {% endif %}
+      {{ content_bottom }}</div>
+    {{ column_right }}</div>
+</div>
+{{ footer }}

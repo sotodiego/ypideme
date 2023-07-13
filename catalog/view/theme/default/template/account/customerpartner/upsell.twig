@@ -1,0 +1,91 @@
+{{ header }}{{ separate_column_left }}
+{% if (separate_view is defined and separate_view) %}
+  <div class="container-fluid" id="content">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+    {% endfor %}
+  </ul>
+  {% if (success) %}
+  <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}</div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+    {% if (column_left and column_right) %}
+    {% set class = 'col-sm-6' %}
+    {% elseif (column_left or column_right) %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">{{ content_top }}
+      <h1>{{ heading_title }}
+        <div class="pull-right btn-group">
+          {% if (wkIsMember) %}
+          <a data-toggle="tooltip" title="{{ button_delete }}" onclick="confirm('{{ text_confirm_delete }}') ? $('#form-upsell').submit() : false;" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+          <a href="{{ add }}" data-toggle="tooltip" title="{{ button_insert }}" class="btn btn-primary"><i class="fa fa-plus"></i></a>
+          {% endif %}
+        </div>
+      </h1>
+      {% if (wkIsMember) %}
+      <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-upsell" class="form-horizontal">
+        <fieldset>
+          <legend><i class="fa fa-list"></i> {{ heading_title }}</legend>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
+                  <td class="text-left">{{ entry_parent_product }}</td>
+                  <td class="text-left">{{ entry_child_product }}</td>
+                  <td class="text-left">{{ entry_countdown }}</td>
+                  <td class="text-left">{{ entry_units_available }}</td>
+                  <td class="text-left">{{ entry_units_status }}</td>
+                  <td class="text-left">{{ entry_from_date }}</td>
+                  <td class="text-left">{{ entry_to_date }}</td>
+                  <!-- <td class="text-right">{{ entry_action }}</td> -->
+                </tr>
+              </thead>
+              {% if (upsells is defined and upsells) %}
+              <tbody>
+                {% for upsell in upsells %}
+                <tr>
+                  <td class="text-center">
+                    {% if ((upsell['upsell_id'] in selected)) %}
+                    <input type="checkbox" name="selected[]" value="{{ upsell['upsell_id'] }}" checked="checked" />
+                    {% else %}
+                    <input type="checkbox" name="selected[]" value="{{ upsell['upsell_id'] }}" />
+                    {% endif %}
+                  </td>
+                  <td class="text-left">{{ upsell['parent_products'] }}</td>
+                  <td class="text-left">{{ upsell['child_products'] }}</td>
+                  <td class="text-left">{{ upsell['countdown_status'] }}</td>
+                  <td class="text-left">{{ upsell['quantity'] }}</td>
+                  <td class="text-left">{{ upsell['quantity_status'] }}</td>
+                  <td class="text-left">{{ upsell['date_start'] }}</td>
+                  <td class="text-left">{{ upsell['date_end'] }}</td>
+                  <!-- <td class="text-right"><a href="{{ delete }}" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger"><i class="fa fa-trash"></i></a></td> -->
+                </tr>
+                {% endfor %}
+              </tbody>
+              {% else %}
+              <tfoot>
+                <tr>
+                  <td colspan="10" class="text-center alert-danger">{{ text_no_records }}</td>
+                </tr>
+              </tfoot>
+              {% endif %}
+
+            </table>
+          </div>
+        </fieldset>
+      </form>
+      {% else %}
+        <div class="text-danger">{{ error_membership_access }}</div>
+      {% endif %}
+      {{ content_bottom }}</div>
+    {{ column_right }}</div>
+</div>
+{{ footer }}

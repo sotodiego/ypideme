@@ -1,0 +1,130 @@
+{% if (products is defined and products) %}
+<div class="row">
+  {% set i = 0 %}
+  {% for product in products %}
+  {% set class = 'col-sm-6 col-xs-12' %}
+  <div class="{{ class }}">
+    <div class="product-thumb transition" style="text-align: center;">
+      <div class="image"><a href="{{ parent['href'] }}"><img src="{{ parent['thumb'] }}" alt="{{ parent['name'] }}" title="{{ parent['name'] }}" class="img-responsive" style="margin: 0 auto;" /></a></div>
+      <div class="">
+        <h4><a href="{{ parent['href'] }}">{{ parent['name'] }}</a></h4>
+        <h5>{{ product['parent_product_option_name'] }}</h5>
+        {% if (parent['rating']) %}
+        <div class="rating">
+          {% set i = 1 %}{% for i in i..5 %}
+          {% if (parent['rating'] < i) %}
+          <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-1x"></i></span>
+          {% else %}
+          <span class="fa fa-stack"><i class="fa fa-star fa-stack-1x"></i><i class="fa fa-star-o fa-stack-1x"></i></span>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if (parent['price']) %}
+        <p class="price">
+          {{ parent['price'] }}
+        </p>
+        {% endif %}
+      </div>
+        <i class="fa fa-plus"></i>
+      <div class="image"><a href="{{ product['href'] }}"><img src="{{ product['thumb'] }}" alt="{{ product['name'] }}" title="{{ product['name'] }}" class="img-responsive" style="margin: 0 auto;" /></a></div>
+      <div class="wkcross">
+        <h4><a href="{{ product['href'] }}">{{ product['name'] }}</a></h4>
+        <h5>{{ product['product_option_name'] }}</h5>
+        {% if (product['rating']) %}
+        <div class="rating">
+          {% set i = 1 %}{% for i in i..5 %}
+          {% if (product['rating'] < i) %}
+          <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-1x"></i></span>
+          {% else %}
+          <span class="fa fa-stack"><i class="fa fa-star fa-stack-1x"></i><i class="fa fa-star-o fa-stack-1x"></i></span>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if (product['price']) %}
+        <p class="price">
+          {{ product['price'] }}
+        </p>
+        {% endif %}
+        {% if (product['countdown_status'] and countdown_status) %}
+          {% set random = random(1, 9999) %}
+          <h4 id="clock{{ random }}"></h4>
+          <script type="text/javascript">
+          var timer{{ random }} = {{ product['duration'] }};
+          var inte{{ random }} = setInterval(function () {
+            var countdown_format = '{{ product["countdown_format"] }}';
+            countdownTimer(timer{{ random }}, '{{ random }}', countdown_format);
+            if (--timer{{ random }} < 0) {
+              clearInterval(inte{{ random }});
+              $('#clock{{ random }}').parent().parent().parent().remove();
+            }
+          }, 1000);
+          countdownTimer(timer{{ random }}, '{{ random }}', '{{ product["countdown_format"] }}');
+          cross_inter.push('inte{{ random }}');
+          </script>
+        {% endif %}
+        {% if (product['quantity_status'] and quantity_status) %}
+          <h3>{{ product['formatted_quantity'] }}</h3>
+        {% endif %}
+      </div>
+      <h4>{{ text_bundle_price }}: {{ product['bundle_price'] }}</h4>
+      <h3>{{ text_you_save }}: {{ product['you_save'] }}</h3>
+      <div class="button-group">
+        <button class="btn btn-default" type="button" onclick="addCrosssellToCart('{{ product['id'] }}');" style="width:100%;"><span class="hidden-xs hidden-sm hidden-md">{{ button_cart_bundle }}</span> <i class="fa fa-shopping-cart"></i></button>
+      </div>
+    </div>
+  </div>
+  {% set i = i + 1 %}
+  {% endfor %}
+</div>
+{% else %}
+  <div class="row">
+    {% set class = 'col-sm-12' %}
+    <div class="{{ class }}">
+      <h1>{{ error_title }}</h1>
+      <p>{{ text_error }}</p>
+      <div class="buttons">
+        <div class="pull-right"></div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<style type="text/css">
+  .wkcross {
+    text-align: center;
+    min-height: 120px;
+  }
+  #wkmodalbody .product-thumb {
+    border: 1px solid;
+    border-radius: 5px;
+  }
+  #wkmodalbody .image {
+    min-height: 0;
+  }
+</style>
+<script type="text/javascript">
+  function addBundle(parent_id, child_id) {
+    cart.add(parent_id);
+    cart.add(child_id);
+    $('#cart > ul').load('index.php?route=common/cart/info ul li');
+    $("#wkModal").trigger('click');
+  }
+
+  function addCrosssellToCart(id) {
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/product_options/addCrosssellBundle',
+      type: 'post',
+      data: 'id=' + id,
+      dataType: 'json',
+      success: function(json) {
+        if (json['success']) {
+          $('#cart > button').html('<span id="cart-total"><i class="fa fa-shopping-cart"></i> ' + json['total'] + '</span>');
+          $('html, body').animate({ scrollTop: 0 }, 'slow');
+          $('#cart > ul').load('index.php?route=common/cart/info ul li');
+        }
+      }
+    });
+    $("#wkModal").trigger('click');
+  }
+</script>

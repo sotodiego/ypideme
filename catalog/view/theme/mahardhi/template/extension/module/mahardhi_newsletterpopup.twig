@@ -1,0 +1,67 @@
+<div class="modal fade newsletter-popup" id="newsletter-popup">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        	<div class="modal-body">
+    			<div class="newsletter-content">
+    				<div class="newsletter-content-innner">
+    					<h3>{{ newsletter_title_popup }}</h3>
+    					<p>{{ newsletter_description_popup }}</p>        					
+    					<form name="frmnewsletterpopup" id="frmnewsletterpopup" onsubmit="subscribe_popup();return false" method="post">
+                            <input type="email" class="newsletter_usr_popup_email" name="newsletter_usr_popup_email" id="newsletter_usr_popup_email" placeholder="{{ entry_user_email }}" required>                            
+                            <button class="btn btn-default subscribe-btn" type="submit">{{ entry_subscribe }}</button>
+                        </form> 
+                        <!-- newsletter notofication -->
+						<div class="newsletter-popup-message">
+						</div>
+						<!-- newsletter notofication -->
+                        <div class="newsletter-content-bottom">
+							<input type="checkbox" id="popup_dont_show_again">
+							<label for="popup_dont_show_again">{{ entry_show_again }}</label>
+					  	</div>
+    				</div>
+		        </div> 
+                <button type="button" class="newsletter-btn-close close" data-dismiss="modal" aria-label="Close"><i class="fa fa-close"></i></button>
+        	</div>	            
+        </div>
+    </div>
+</div>
+
+<script><!--
+function subscribe_popup(){
+	$.ajax({
+			type: 'post',
+			url: 'index.php?route=extension/module/mahardhi_newsletter/subscribepopup',
+			dataType: 'html',
+            data:$("#frmnewsletterpopup").serialize(),
+			success: function (html) {				
+				try {
+					eval(html);
+				} 
+				catch (e) {
+				}
+			}}); 
+}
+//--></script>
+<script><!--
+// check for validation
+$(document).ready(function() {
+	$('#newsletter_usr_popup_email').keypress(function(e) {
+		if(e.which == 13) {
+			e.preventDefault();
+			subscribe_popup();
+		}	
+	});
+
+	//transition effect
+        if($.cookie("showpopup") != 1){
+			$('#newsletter-popup').modal('show');
+        }
+		$('#popup_dont_show_again').on('change', function(){			
+			if($.cookie("showpopup") != 1){   
+				$.cookie("showpopup",'1')
+			}else{
+				$.cookie("showpopup",'0')
+			}
+		}); 
+});	
+//--></script>

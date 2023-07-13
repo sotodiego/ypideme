@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+  <name>Marketplace 1</name>
+  <version>2.0.0</version>
+  <code>Webkul Marketplace 1</code>
+  <author>Webkul</author>
+  <link>http://webkul.com</link>
+
+  <file path="admin/controller/common/column_left.php">
+    <operation>
+      <search><![CDATA[
+        // Catalog
+      ]]></search>
+      <add position="before"><![CDATA[
+        // marketplace code starts here
+
+        $marketplace = $this->load->controller('extension/module/marketplace/adminmenu');
+
+        if ($marketplace) {
+						$data['menus'][] = array(
+								'id'       => 'menu-marketplace',
+								'icon'     => 'fa-users',
+								'name'     => $this->language->get('text_marketplace'),
+								'href'     => '',
+								'children' => $marketplace
+						);
+				}
+        // marketplace code ends here
+      ]]></add>
+    </operation>
+  </file>
+
+  <!-- delete product from seller table if admin delete product -->
+  <file path="admin/model/catalog/product.php">
+    <operation>
+      <search><![CDATA[
+        $this->db->query("DELETE FROM " . DB_PREFIX . "review WHERE product_id = '" . (int)$product_id . "'");
+      ]]></search>
+      <add position="after"><![CDATA[
+        /**
+         * Marketplace code starts here
+         */
+        if ($this->config->get('module_marketplace_status')) {
+            $this->db->query("DELETE FROM " . DB_PREFIX . "customerpartner_to_product WHERE product_id = '" . (int)$product_id . "'");
+            //commented because it's also important for order
+            //$this->db->query("DELETE FROM " . DB_PREFIX . "customerpartner_sold_tracking WHERE product_id = '" . (int)$product_id . "'");
+        }
+        /**
+         * Marketplace code Ends here
+         */
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        public function editProduct($product_id, $data) {
+      ]]></search>
+      <add position="after"><![CDATA[
+        /**
+         * Marketplace
+         */
+        if ($this->config->get('module_marketplace_status')) {
+            $checkSellerProduct = $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customerpartner_to_product WHERE product_id = '" . (int)$product_id."' ORDER BY id ASC")->row;
+            if ($checkSellerProduct) {
+                $updatePrice = $this->currency->convert($data['price'],$this->config->get('config_currency'),$checkSellerProduct['currency_code']);
+
+                $this->db->query("UPDATE " . DB_PREFIX . "customerpartner_to_product SET price = '".(float)$data['price']."',seller_price = '".(float)$updatePrice."'  WHERE product_id = '".$product_id."' ORDER BY id ASC");
+            }
+        }
+        /**
+         * Marketplace
+         */
+        ]]></add>
+    </operation>
+  </file>
+  <!--  display seller name with product in order info and after edit   -->
+  <file path="admin/controller/sale/order.php">
+    <operation>
+      <search><![CDATA[
+        $data['products'][] = array(
+      ]]></search>
+      <add position="before"><![CDATA[
+        /**
+         * Marketplace code starts here
+         */
+        if ($this->config->get('module_marketplace_status')) {
+
+            $seller_details = $this->db->query("SELECT c.customer_id,CONCAT(c.firstname,' ',c.lastname) name,c.email FROM ".DB_PREFIX."customerpartner_to_product c2p LEFT JOIN ".DB_PREFIX."customer c ON (c2p.customer_id = c.customer_id) WHERE c2p.product_id = '".(int)$product['product_id']."'")->row;
+
+            if($seller_details AND isset($seller_details['name']) AND $seller_details['name'])
+              $product['name'] = $product['name'].'</a> by Seller <a href="'.$this->url->link('customerpartner/partner', 'user_token=' . $this->session->data['user_token'] . '&view_all=1&filter_email=' . $seller_details['email'], true).'"><b>'.$seller_details['name'].'</b></a>';
+
+          }
+        /**
+         * Marketplace code ends here
+         */
+
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        $data['order_products'][] = array(
+      ]]></search>
+      <add position="before"><![CDATA[
+        /**
+         * Marketplace code starts here
+         */
+        if ($this->config->get('module_marketplace_status')) {
+            $seller_details = $this->db->query("SELECT c.customer_id,CONCAT(c.firstname,' ',c.lastname) name,c.email FROM ".DB_PREFIX."customerpartner_to_product c2p LEFT JOIN ".DB_PREFIX."customer c ON (c2p.customer_id = c.customer_id) WHERE c2p.product_id = '".(int)$product['product_id']."'")->row;
+
+            if($seller_details AND isset($seller_details['name']) AND $seller_details['name'])
+              $product['name'] = $product['name'].' by Seller <b>'.$seller_details['name'].'</b>';
+         }
+        /**
+         * Marketplace code ends here
+         */
+
+      ]]></add>
+    </operation>
+  </file>
+  <!-- code for custom field -->
+  <file path="admin/view/template/catalog/product_form.twig">
+    <operation>
+      <search><![CDATA[
+        <li><a href="#tab-design" data-toggle="tab">{{ tab_design }}</a></li>
+      ]]></search>
+      <add position="before"><![CDATA[
+        <!-- Marketplace customfield -->
+        {% if module_marketplace_status is defined and module_marketplace_status %}
+          <li><a href="#tab-custom-field" data-toggle="tab">{{ "Custom field" }}</a></li>
+        {% endif %}
+        <!-- Marketplace customfield -->
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        <div class="tab-pane" id="tab-design">
+      ]]></search>
+      <add position="before"><![CDATA[
+        {{ mpcustomfield }}
+      ]]></add>
+    </operation>
+  </file>
+  <file path="admin/controller/catalog/product.php">
+    <operation>
+      <search><![CDATA[
+        $this->response->setOutput($this->load->view('catalog/product_form', $data));
+      ]]></search>
+      <add position="before"><![CDATA[
+        /**
+         * Marketplace Code Starts Here
+         */
+        if($this->config->get('module_marketplace_status') && isset($this->request->get['product_id'])){
+            $data['product_id_text'] = '&product_id='.$this->request->get['product_id'];
+        }else{
+            $data['product_id_text'] = '';
+        }
+
+        if($this->config->get('module_marketplace_status')){
+            $data['module_marketplace_status'] = true;
+        }else{
+            $data['module_marketplace_status'] = false;
+        }
+
+        /**
+         * Marketplace Code Ends Here
+         */
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        $this->response->redirect($this->url->link('catalog/product', 'user_token=' . $this->session->data['user_token'] . $url, true));
+      ]]></search>
+      <add position="replace"><![CDATA[
+        /**
+         * Marketplace Code Starts Here
+         */
+        if ($this->config->get('module_marketplace_status') && isset($this->request->get['mpcheck'])) {
+            $this->response->redirect($this->url->link('customerpartner/product', 'user_token=' . $this->session->data['user_token'] . $url, true));
+        } else {
+            $this->response->redirect($this->url->link('catalog/product', 'user_token=' . $this->session->data['user_token'] . $url, true));
+        }
+         /**
+         * Marketplace Code Ends Here
+         */
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        $data['cancel'] = $this->url->link('catalog/product', 'user_token=' . $this->session->data['user_token'] . $url, true);
+      ]]></search>
+      <add position="after"><![CDATA[
+        /**
+         * Marketplace Code Starts Here
+         */
+        if ($this->config->get('module_marketplace_status') && isset($this->request->get['mpcheck'])) {
+            if (!isset($this->request->get['product_id'])) {
+                $data['action'] = $this->url->link('catalog/product/add', 'user_token=' . $this->session->data['user_token'] . $url . '&mpcheck=1', true);
+            } else {
+                $data['action'] = $this->url->link('catalog/product/edit', 'user_token=' . $this->session->data['user_token'] . '&mpcheck=1&product_id=' . $this->request->get['product_id'] . $url, true);
+            }
+
+            $data['cancel'] = $this->url->link('customerpartner/product', 'user_token=' . $this->session->data['user_token'] . $url, true);
+        } else {
+            if (!isset($this->request->get['product_id'])) {
+                $data['action'] = $this->url->link('catalog/product/add', 'user_token=' . $this->session->data['user_token'] . $url, true);
+            } else {
+                $data['action'] = $this->url->link('catalog/product/edit', 'user_token=' . $this->session->data['user_token'] . '&product_id=' . $this->request->get['product_id'] . $url, true);
+            }
+
+            $data['cancel'] = $this->url->link('catalog/product', 'user_token=' . $this->session->data['user_token'] . $url, true);
+        }
+         /**
+         * Marketplace Code Ends Here
+         */
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        $this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
+      ]]></search>
+      <add position="before"><![CDATA[
+        if($this->config->get('module_marketplace_status')) {
+                $this->load->model("wkcustomfield/wkcustomfield");
+                $wkcustomFields = array();
+                if(isset($this->request->post['product_custom_field'])){
+                    $data = $this->request->post['product_custom_field'];
+                }else{
+                    $data = '';
+                }
+                $this->model_wkcustomfield_wkcustomfield->editCustomFields($data,$this->request->get['product_id']);
+        }
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        $this->model_catalog_product->addProduct($this->request->post);
+      ]]></search>
+      <add position="replace"><![CDATA[
+          /**
+           * Marketplace Code Starts Here
+           */
+          if($this->config->get('module_marketplace_status')) {
+                  $product_id = $this->model_catalog_product->addProduct($this->request->post);
+                  $this->load->model("wkcustomfield/wkcustomfield");
+                  $wkcustomFields = array();
+                  if(isset($this->request->post['product_custom_field'])){
+                      $this->model_wkcustomfield_wkcustomfield->addCustomFields($this->request->post['product_custom_field'],$product_id);
+                  }
+          }else{
+              $this->model_catalog_product->addProduct($this->request->post);
+          }
+          /**
+           * Marketplace Code Ends Here
+           */
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        $this->load->model('design/layout');
+      ]]></search>
+      <add position="before"><![CDATA[
+        /**Marketplace Code Starts Here
+         * customfield
+         */
+
+         $data['mpcustomfield'] = $this->load->controller('extension/module/marketplace/customfield');
+
+        /**Marketplace Code Ends Here
+         * customfield
+         */
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        if ($this->error && !isset($this->error['warning'])) {
+      ]]></search>
+      <add position="before"><![CDATA[
+        /**Marketplace Code Starts Here
+         * customfield
+         */
+        $customfielddata = array();
+        if(isset($this->request->post['product_custom_field'])){
+            $customfielddata = $this->request->post['product_custom_field'];
+        }
+        foreach ($customfielddata as $key => $value) {
+            if(isset($value['custom_field_is_required']) && (($value['custom_field_is_required'] == 'yes' && isset($value['custom_field_value']) && $value['custom_field_value'][0] == '' ) || ($value['custom_field_is_required'] == 'yes' && !isset($value['custom_field_value'])))) {
+                $this->error['customFieldError'][] = $value['custom_field_id'];
+            }
+        }
+        if(isset($this->error['customFieldError'])) {
+            $this->error['warning'] = $this->language->get('error_warning');
+        }
+
+        /**Marketplace Code Ends Here
+         * customfield
+         */
+      ]]></add>
+    </operation>
+  </file>
+  <!-- Sell Link in header -->
+  <file path="catalog/controller/common/header.php">
+    <operation>
+      <search>
+        <![CDATA[
+        $this->load->language('common/header');
+      ]]></search>
+      <add position="before"><![CDATA[
+        $data['notification'] = '';
+        $data['sellmenu'] =  $this->load->controller('extension/module/marketplace/sellmenu');
+        if($this->config->get('module_marketplace_status')){
+    				$data['chkIsPartner'] = $this->model_account_customerpartner->chkIsPartner();
+    				$data['marketplace_seller_mode'] = isset($this->session->data['marketplace_seller_mode']) ? $this->session->data['marketplace_seller_mode'] : 1;
+    				if ($data['chkIsPartner'] && $data['marketplace_seller_mode']) {
+    					$data['notification'] = $this->load->controller('account/customerpartner/notification/notifications');
+
+    					$data['notification_total'] = $this->model_account_notification->getTotalSellerActivity() + $this->model_account_notification->getSellerProductActivityTotal() + $this->model_account_notification->getSellerReviewsTotal()-$this->model_account_notification->getViewedNotifications();
+    				}
+    		}
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/view/theme/*/template/common/header.twig">
+    <operation>
+      <search><![CDATA[
+          </head>
+      ]]></search>
+      <add position="before">
+        <![CDATA[
+        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" type="text/css" rel="stylesheet" media="screen" />
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+          </head>
+      ]]></search>
+      <add position="after" offset="1"><![CDATA[
+          {% if notification is defined and notification %} {{ notification }} {% endif %}
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        <li><a href="{{checkout}}">{{text_checkout}}</a></li>
+      ]]></search>
+      <add position="after"><![CDATA[
+        {{ sellmenu }}
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/controller/account/register.php">
+    <operation>
+      <search><![CDATA[
+        $data['column_left'] = $this->load->controller('common/column_left');
+      ]]></search>
+      <add position="before"><![CDATA[
+        $data['mpregisterseller'] = $this->load->controller('extension/module/marketplace/registerseller');
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        function validate() {
+      ]]></search>
+      <add position="after"><![CDATA[
+        if($this->config->get('module_marketplace_status') && $this->config->get('marketplace_becomepartnerregistration') AND isset($this->request->post['tobecomepartner'])){
+
+            $this->load->language('account/customerpartner/become_partner');
+
+            if(utf8_strlen($this->request->post['shoppartner'])<=3 && $this->request->post['tobecomepartner']==1){
+                $this->error['errshoppartner'] = $this->language->get('error_validshop');
+            }else if(utf8_strlen($this->request->post['shoppartner']) >1 && $this->request->post['tobecomepartner']==1){
+                $this->load->model('customerpartner/master');
+                if($this->model_customerpartner_master->getShopData($this->request->post['shoppartner'])){
+                  $this->error['errshoppartner'] = $this->language->get('error_noshop');
+                }
+            }
+
+            $this->load->language('account/register');
+        }
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        unset($this->session->data['guest']);
+      ]]></search>
+      <add position="before"><![CDATA[
+            if($this->config->get('module_marketplace_status') && $this->config->get('marketplace_becomepartnerregistration')){
+                if ($this->request->post['tobecomepartner']=='1' && $this->request->post['shoppartner']) {
+                    $this->load->model('account/customerpartner');
+                    $this->model_account_customerpartner->becomePartner($this->request->post['shoppartner'],0,$customer_id);
+                }
+            }
+
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/view/theme/*/template/account/register.twig">
+    <operation>
+      <search><![CDATA[
+        {% if text_agree %}
+      ]]></search>
+      <add position="before"><![CDATA[
+        {{ mpregisterseller }}
+      ]]></add>
+    </operation>
+  </file>
+  <!-- code for unset session variable on logout for pop-up modal with information -->
+  <file path="system/library/cart/customer.php">
+    <operation>
+      <search><![CDATA[
+        unset($this->session->data['customer_id']);
+      ]]></search>
+      <add position="after"><![CDATA[
+        unset($this->session->data['openModal']);
+      ]]></add>
+    </operation>
+  </file>
+  <!-- send mail to seller after product sold -->
+  <file path="catalog/model/checkout/order.php">
+    <operation>
+      <search><![CDATA[
+        $this->cache->delete('product');
+      ]]></search>
+      <add position="before"><![CDATA[
+            /**
+             * Marketplace Code Starts here
+             */
+
+             $order_status_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_status WHERE order_status_id = '" . (int)$order_status_id . "' AND language_id = '" . (int)$order_info['language_id'] . "'");
+
+       				if ($order_status_query->num_rows) {
+       					$order_status = $order_status_query->row['name'];
+       				} else {
+       					$order_status = '';
+       				}
+
+              if ($this->config->get('module_marketplace_status')){
+                 $this->load->model('account/customerpartnerorder');
+                 $this->model_account_customerpartnerorder->customerpartner($order_info,$order_status, $comment,$order_status_id);
+              }
+            /**
+             * Marketplace Code Ends here
+             */
+      ]]></add>
+    </operation>
+
+    <operation>
+      <search><![CDATA[
+        $customer_info = $this->model_account_customer->getCustomer($order_info['customer_id']);
+      ]]></search>
+      <add position="before"><![CDATA[
+            /**
+             * Marketplace Code Starts here
+             */
+                if ($this->config->get('module_marketplace_status')){
+                $toAdmin = false;
+                if(isset($comment) && $comment) {
+                    $get_comment = explode('___',$comment);
+                    if($get_comment[0] == 'wk_admin_comment' ) {
+                        $comment = ($get_comment[1]);
+                        $toAdmin = true;
+                        $this->config->set('config_email',$this->customer->getEmail());
+                        if($this->config->get('marketplaceadminmail')) {
+                            $order_info['email'] = $this->config->get('marketplace_adminmail');
+                        } else {
+                            $order_info['email'] = $this->config->get('config_email');
+                        }
+                    }
+                }
+            }
+            /**
+             * Marketplace Code Ends here
+             */
+      ]]></add>
+    </operation>
+
+    <operation>
+      <search><![CDATA[
+        $message .= $language->get('text_update_order_status') . "\n\n";
+      ]]></search>
+      <add position="replace"><![CDATA[
+            /**
+             * Marketplace Code Starts here
+             */
+                    if($this->config->get('module_marketplace_status') && isset($toAdmin) && $toAdmin) {
+                        $message .= $language->get('text_update_order_status_admin') . "\n\n";
+                    } else {
+                        $message .= $language->get('text_update_order_status') . "\n\n";
+                    }
+            /**
+             * Marketplace Code Ends here
+             */
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        $message .= $language->get('text_update_comment') . "\n\n";
+      ]]></search>
+      <add position="replace"><![CDATA[
+        /**
+         * Marketplace Code Starts here
+         */
+                if($this->config->get('module_marketplace_status') && isset($toAdmin) && $toAdmin) {
+                    $message .= $language->get('text_update_comment_admin') . "\n\n";
+                } else {
+                    $message .= $language->get('text_update_comment') . "\n\n";
+                }
+        /**
+         * Marketplace Code Ends here
+         */
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        $message .= $language->get('text_update_link') . "\n";
+      ]]></search>
+      <add position="before"><![CDATA[
+        /**
+         * Marketplace Code Starts here
+         */
+                if($this->config->get('module_marketplace_status') && isset($toAdmin) && !$toAdmin) {
+        /**
+         * Marketplace Code Ends here
+         */
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+        $message .= $language->get('text_update_link') . "\n";
+      ]]></search>
+      <add position="after" offset="1"><![CDATA[
+            /**
+             * Marketplace Code Starts here
+             */
+                    }
+            /**
+             * Marketplace Code Ends here
+             */
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/language/*/mail/order.php">
+    <operation>
+      <search><![CDATA[
+        $_['text_update_footer']        = 'Please reply to this email if you have any questions.';
+      ]]></search>
+      <add position="after"><![CDATA[
+        $_['text_update_order_status_admin']  = 'Order has been updated to the following status:';
+        $_['text_update_comment_admin']       = 'The comments for above order are:';
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/controller/checkout/success.php">
+    <operation>
+      <search><![CDATA[
+        $this->cart->clear();
+      ]]></search>
+      <add position="after"><![CDATA[
+        if ($this->customer->isLogged()) {
+
+  			  $this->load->model('account/notification');
+
+  			  $activity_data = array(
+  			    'customer_id' => $this->customer->getId(),
+  			    'name'        => $this->customer->getFirstName() . ' ' . $this->customer->getLastName(),
+  			    'order_id'    => $this->session->data['order_id']
+  			  );
+
+  			  $this->model_account_notification->addActivity('order_account', $activity_data);
+  			}
+      ]]></add>
+    </operation>
+  </file>
+  <!-- end here -->
+</modification>

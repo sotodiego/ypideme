@@ -1,0 +1,609 @@
+{{ header }}
+<style type="text/css">
+  header, .breadcrumb{
+    z-index: 12 !important;
+  }
+
+  .imgoption{
+    display: block;
+    margin-top: 5px;
+    width: 14%;
+  }
+  hr {
+    width: 100%;
+height: 1px !important;
+margin-bottom: : 10px!important;
+margin-left: auto;
+margin-right: auto;
+color:#e5e5e5;
+margin-top: 10px;
+  }
+
+  .imgoption button {
+    width: 100%;
+  }
+  @media only screen and (max-width: 767px) {
+    .imgoption{
+      width: 95px;
+    }
+  }
+  .img-thumbnail {
+    border: 1px solid grey;
+  }
+</style>
+<style type="text/css">
+
+</style>
+
+{{ separate_column_left }}
+{% if (separate_view is defined and separate_view) %}
+  <div class="container-fluid" id="content">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+    {% endfor %}
+  </ul>
+  {% if (error_warning is defined and error_warning) %}
+    <div class="alert alert-danger"><i class="fa fa-check-circle"></i> {{ error_warning }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+  {% endif %}
+  {% if (success is defined and success) %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+    {% if (column_left and column_right) %}
+    {% set class = 'col-sm-6' %}
+    {% elseif (column_left or column_right) %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">{{ content_top }}
+      {% if (chkIsPartner) %}
+      <h1>{{ heading_title|striptags }}
+      </h1>
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }}</a></li>
+          <li><a href="#tab-commission" data-toggle="tab">{{ tab_commission }}</a></li>
+          <li><a href="#tab-product" data-toggle="tab">{{ tab_product }}</a></li>
+          <li><a href="#tab-images" data-toggle="tab">{{ "Images" }}</a></li>
+          <li><a href="#tab-order" data-toggle="tab">{{ tab_order }}</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="tab-general">
+            <fieldset>
+              <legend>{{ 'General Permissions' }}</legend>
+               <div class="form-group">
+                <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_becomepartner }}</label>
+                <div class="col-sm-6">
+                    {% if (configurations['marketplace_becomepartnerregistration'] is defined and not configurations['marketplace_becomepartnerregistration']) %}
+                      {{ text_disabled }}
+                    {% else %}
+                      {{ text_enabled }}
+                    {% endif %}
+
+                </div>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                 <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_partnerapprov }}</label>
+                 <div class="col-sm-6">
+
+                     {% if (configurations['marketplace_partnerapprov'] is defined and not configurations['marketplace_partnerapprov']) %}
+                       {{ text_disabled }}
+                     {% else %}
+                       {{ text_enabled }}
+                     {% endif %}
+
+                 </div>
+                 </div>
+
+                 <hr>
+
+                 <div class="form-group">
+                  <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_productapprov }}</label>
+                  <div class="col-sm-6">
+
+                      {% if (configurations['marketplace_productapprov'] is defined and not configurations['marketplace_productapprov']) %}
+                        {{ text_disabled }}
+                      {% else %}
+                        {{ text_enabled }}
+                      {% endif %}
+
+                  </div>
+                  </div>
+
+                  <hr>
+
+                  <div class="form-group">
+                   <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_categoryapprov }}</label>
+                   <div class="col-sm-6">
+
+                        {% if (configurations['marketplace_categoryapprov'] is defined and not configurations['marketplace_categoryapprov']) %}
+                         {{ text_disabled }}
+                       {% else %}
+                         {{ text_enabled }}
+                       {% endif %}
+
+                   </div>
+                   </div>
+
+                   <hr>
+
+                   <div class="form-group">
+                    <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_informationapprov }}</label>
+                    <div class="col-sm-6">
+
+                        {% if (configurations['marketplace_informationapprov'] is defined and not configurations['marketplace_informationapprov']) %}
+
+                          {{ text_disabled }}
+                        {% else %}
+                          {{ text_enabled }}
+                        {% endif %}
+
+                    </div>
+                    </div>
+
+                    <hr>
+                    <div class="form-group">
+                     <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_sellereditreviewinfo }}</label>
+                     <div class="col-sm-6">
+
+                         {% if (configurations['marketplace_sellereditreview'] is defined and not configurations['marketplace_sellereditreview']) %}
+                           {{ text_disabled }}
+                         {% else %}
+                           {{ text_enabled }}
+                         {% endif %}
+
+                     </div>
+                     </div>
+                     <hr>
+                     <div class="form-group">
+                      <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_customer_contact_seller }}</label>
+                      <div class="col-sm-6">
+
+                          {% if (configurations['marketplace_customercontactseller'] is defined and not configurations['marketplace_customercontactseller']) %}
+                            {{ text_disabled }}
+                          {% else %}
+                            {{ text_enabled }}
+                          {% endif %}
+
+                      </div>
+                      </div>
+                       <hr>
+                       <div class="form-group">
+                        <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_seller_name_cart }}</label>
+                        <div class="col-sm-6">
+
+                            {% if (configurations['marketplace_seller_name_cart_status'] is defined and not configurations['marketplace_seller_name_cart_status']) %}
+                              {{ text_disabled }}
+                            {% else %}
+                              {{ text_enabled }}
+                            {% endif %}
+
+                        </div>
+                        </div>
+                         <hr>
+                    <div class="form-group">
+                      <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_mail_admin_customer_contact_seller }}</label>
+                      <div class="col-sm-6">
+
+                              {% if (configurations['marketplace_mailadmincustomercontactseller'] is defined and not configurations['marketplace_mailadmincustomercontactseller']) %}
+                                {{ text_disabled }}
+                              {% else %}
+                                {{ text_enabled }}
+                              {% endif %}
+
+                      </div>
+                     </div>
+                      <hr>
+                      <div class="form-group">
+                        <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_separate_view }}</label>
+                          <div class="col-sm-6">
+
+                                {% if (configurations['marketplace_separate_view'] is defined and not configurations['marketplace_separate_view']) %}
+                                  {{ text_disabled }}
+                                {% else %}
+                                  {{ text_enabled }}
+                                {% endif %}
+
+                          </div>
+                        </div>
+                      <hr>
+            </fieldset>
+          </div>
+          <div class="tab-pane" id="tab-commission">
+            <fieldset>
+              <legend>{{ 'Commisions Permissions' }}</legend>
+              <hr>
+              <div class="form-group">
+               <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_commission }}</label>
+               <div class="col-sm-6">
+                   {% if (configurations['marketplace_commission'] is defined and configurations['marketplace_commission']) %}
+ {{ configurations['marketplace_commission']~' %' }}
+ {% endif %}
+               </div>
+               </div>
+                <hr>
+                <div class="form-group">
+                 <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_commission_unit_price }}</label>
+                 <div class="col-sm-6">
+
+                     {% if (configurations['marketplace_commission_unit_price'] is defined and not configurations['marketplace_commission_unit_price']) %}
+                       {{ text_disabled }}
+                     {% else %}
+                       {{ text_enabled }}
+                     {% endif %}
+
+                 </div>
+                 </div>
+                  <hr>
+                  <div class="form-group">
+                   <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_commission_tax }}</label>
+                   <div class="col-sm-6">
+
+                       {% if (configurations['marketplace_commission_tax'] is defined and not configurations['marketplace_commission_tax']) %}
+                         {{ text_disabled }}
+                       {% else %}
+                         {{ text_enabled }}
+                       {% endif %}
+
+                   </div>
+                   </div>
+                    <hr>
+                    <div class="form-group">
+                     <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_commission_worked }}</label>
+                     <div class="col-sm-6">
+
+                         {% if (configurations['marketplace_commissionworkedon'] is defined and not configurations['marketplace_commissionworkedon']) %}
+                           {{ text_no }}
+                         {% else %}
+                           {{ text_yes }}
+                         {% endif %}
+
+                     </div>
+                     </div>
+                      <hr>
+                      <div class="form-group">
+                       <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_commission_worked }}</label>
+                       <div class="col-sm-6">
+                         <div class="well well-sm" style="height: 80px; overflow: auto;">
+                           <div class="">
+                             <label>
+                               {{ entry_category }}
+                               {% if (configurations['marketplace_commission_add'] is defined and configurations['marketplace_commission_add'] is iterable and ('category' in configurations['marketplace_commission_add'])) %}
+                                 <i class="fa fa-check" aria-hidden="true" ></i>
+                               {% else %}
+                                 <i class="fa fa-close" ></i>
+                               {% endif %}
+                             </label>
+                           </div>
+                           <div class="">
+                             <label>
+                               {{ entry_category_child }}
+                                {% if (configurations['marketplace_commission_add'] is defined and configurations['marketplace_commission_add'] is iterable and ('category_child' in configurations['marketplace_commission_add'])) %}
+                                  <i class="fa fa-check" aria-hidden="true" ></i>
+                                {% else %}
+                                  <i class="fa fa-close" ></i>
+                               {% endif %}
+                             </label>
+                           </div>
+                         </div>
+                       </div>
+                       </div>
+                        <hr>
+                        <div class="form-group">
+                         <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_priority_commission }}</label>
+                         <div class="col-sm-6">
+                           <ul class="nav nav-pills nav-stacked" id="sortable">
+                             {% if (configurations['marketplace_boxcommission'] is not defined or not configurations['marketplace_boxcommission']) %}
+                               <li><a><span class="ui-icon ui-icon-arrowthick-2-n-s">
+                                 {{ entry_fixed }}</a>
+                               </li>
+                               <li><a><span class="ui-icon ui-icon-arrowthick-2-n-s">
+                                 {{ entry_category }}</a>
+                               </li>
+                               <li><a><span class="ui-icon ui-icon-arrowthick-2-n-s">
+                                 {{ entry_category_child }}</a>
+                               </li>
+                             {% else %}
+                               {% if (configurations['marketplace_boxcommission'] is defined and configurations['marketplace_boxcommission']) %}
+                                 {% for key,box in configurations['marketplace_boxcommission'] %}
+                                   <li><a><span class="ui-icon ui-icon-arrowthick-2-n-s">
+                                     {% if (key == 'fixed') %}
+                                       {{ entry_fixed }}
+                                     {% elseif (key == 'category') %}
+                                       {{ entry_category }}
+                                     {% elseif (key == 'category_child') %}
+                                       {{ entry_category_child }}
+                                     {% endif %}</a>
+                                   </li>
+                                 {% endfor %}
+                               {% endif %}
+                             {% endif %}
+                           </ul>
+                        </div>
+                        </div>
+                      <hr>
+            </fieldset>
+              </div>
+              <div class="tab-pane" id="tab-product">
+                <div class="form-group">
+                 <label class="col-sm-6 control-label" >{{ entry_seller_product_store }}</label>
+                 <div class="col-sm-6">
+
+
+                     {% for key,value in seller_product_store %}
+                          {% if (configurations['marketplace_seller_product_store'] is defined and key == configurations['marketplace_seller_product_store']) %}
+ {{ value }}
+ {% endif %}
+
+                     {% endfor %}
+
+                 </div>
+                 </div>
+                  <hr>
+                  <div class="form-group">
+                    <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_auto_generate_sku }}</label>
+                      <div class="col-sm-6">
+
+                         {% if (configurations['marketplace_auto_generate_sku'] is defined and not configurations['marketplace_auto_generate_sku']) %}
+                           {{ text_disabled }}
+                         {% else %}
+                           {{ text_enabled }}
+                         {% endif %}
+
+                     </div>
+                   </div>
+                    <hr>
+                   <div class="form-group">
+                      <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_low_stock_notification }}</label>
+                        <div class="col-sm-6">
+
+                           {% if (configurations['marketplace_low_stock_notification'] is defined and not configurations['marketplace_low_stock_notification']) %}
+                             {{ text_disabled }}
+                           {% else %}
+                             {{ text_enabled }}
+                           {% endif %}
+
+                       </div>
+                     </div>
+                    <hr>
+                    <div class="form-group">
+                       <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_product_purchase_limit_based_on }}</label>
+                         <div class="col-sm-6">
+
+                            {% if (configurations['marketplace_product_purchase_limit_based_on'] is defined and not configurations['marketplace_product_purchase_limit_based_on']) %}
+                              {{ text_product_quant }}
+                            {% else %}
+                              {{ text_product_num }}
+                            {% endif %}
+
+                        </div>
+                      </div>
+                     <hr>
+                     <div class="form-group">
+                        <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_product_purchase_limit }}</label>
+                          <div class="col-sm-6">
+
+                             {% if (configurations['marketplace_product_purchase_limit'] is defined) %}
+                               {{ configurations['marketplace_product_purchase_limit'] }}
+                             {% endif %}
+
+                         </div>
+                       </div>
+                      <hr>
+                      <div class="form-group">
+                         <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_low_stock_quantity }}</label>
+                           <div class="col-sm-6">
+
+                              {% if (configurations['marketplace_low_stock_quantity'] is defined) %}
+                                {{ configurations['marketplace_low_stock_quantity'] }}
+                              {% endif %}
+
+                          </div>
+                        </div>
+                       <hr>
+
+                       <div class="form-group">
+                        <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_alowed_product_columns }}</label>
+                        <div class="col-sm-6">
+                          <div class="well well-sm" style="height: 150px; overflow: auto;">
+                            {% for value in product_table %}
+                              <div class="">
+                                <label>
+                                  {{ (value|replace({'_': ' '})) }}
+                                  {% if (configurations['marketplace_allowedproductcolumn'] is defined and configurations['marketplace_allowedproductcolumn'] is iterable  and (value in configurations['marketplace_allowedproductcolumn'])) %}
+                                    <i class="fa fa-check" aria-hidden="true" ></i>
+                                  {% else %}
+                                    <i class="fa fa-close" ></i>
+                                 {% endif %}
+                                </label>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </div>
+                    <hr>
+                      <div class="form-group">
+                        <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_alowed_product_tabs }}</label>
+                        <div class="col-sm-6">
+                            <div class="well well-sm" style="height: 150px; overflow: auto;">
+                              {% for value in product_tabs %}
+                                <div class="">
+                                  <label>
+                                    {{ (value|replace({'_': ' '})) }}
+
+                                    {% if (configurations['marketplace_allowedproducttabs'] is defined and configurations['marketplace_allowedproducttabs'] is iterable and (value in configurations['marketplace_allowedproducttabs'])) %}
+                                      <i class="fa fa-check" aria-hidden="true" ></i>
+                                    {% else %}
+                                      <i class="fa fa-close" ></i>
+                                   {% endif %}
+                                  </label>
+                                </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                      </div>
+                    <hr>
+                    <div class="form-group">
+                       <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_category_required }}</label>
+                         <div class="col-sm-6">
+
+                            {% if (configurations['marketplace_seller_category_required'] is defined and not configurations['marketplace_seller_category_required']) %}
+                              {{ text_no }}
+                            {% else %}
+                              {{ text_yes }}
+                            {% endif %}
+
+                        </div>
+                      </div>
+                   <hr>
+                 </div>
+                 <div class="tab-pane" id="tab-images">
+                   <fieldset>
+                     <legend>{{ 'Images Permissions' }}</legend>
+                       <div class="form-group">
+                          <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_no_of_images }}</label>
+                            <div class="col-sm-6">
+
+                               {% if (configurations['marketplace_noofimages'] is defined) %}
+                                 {{ configurations['marketplace_noofimages'] }}
+                               {% endif %}
+
+                           </div>
+                         </div>
+                      <hr>
+                      <div class="form-group">
+                         <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_image_ex }}</label>
+                           <div class="col-sm-6">
+
+                              {% if (configurations['marketplace_imageex'] is defined) %}
+                                {{ configurations['marketplace_imageex'] }}
+                              {% endif %}
+
+                          </div>
+                        </div>
+                     <hr>
+                     <div class="form-group">
+                        <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ wkentry_pimagesize }}</label>
+                          <div class="col-sm-6">
+
+                             {% if (configurations['marketplace_imagesize'] is defined) %}
+                               {{ configurations['marketplace_imagesize']~' KB' }}
+                             {% endif %}
+
+                         </div>
+                       </div>
+                    <hr>
+                    <div class="form-group">
+                       <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_download_ex }}</label>
+                         <div class="col-sm-6">
+
+                            {% if (configurations['marketplace_downloadex'] is defined) %}
+                              {{ configurations['marketplace_downloadex'] }}
+                            {% endif %}
+
+                        </div>
+                      </div>
+                   <hr>
+                   <div class="form-group">
+                      <label class="col-sm-6 control-label" for="input-becomepartnerinfo">{{ entry_download_size }}</label>
+                        <div class="col-sm-6">
+
+                           {% if (configurations['marketplace_downloadsize'] is defined) %}
+                             {{ configurations['marketplace_downloadsize']~' KB' }}
+                           {% endif %}
+
+                       </div>
+                     </div>
+                  <hr>
+                  </fieldset>
+              </div>
+              <div class="tab-pane" id="tab-order">
+                <fieldset>
+                  <legend>{{ 'Order Permissions' }}</legend>
+                  <div class="form-group">
+                     <label class="col-sm-6 control-label" for="">{{ entry_seller_manage_order }}</label>
+                       <div class="col-sm-6">
+
+                          {% if (configurations['marketplace_seller_manage_order'] is defined and configurations['marketplace_seller_manage_order']) %}
+                            <i class="fa fa-check" aria-hidden="true" ></i>
+                          {% else %}
+                            <i class="fa fa-close" ></i>
+                          {% endif %}
+
+                      </div>
+                    </div>
+                 <hr>
+                 <div class="form-group">
+                    <label class="col-sm-6 control-label" for="">{{ wkentry_seller_order_status }}</label>
+                      <div class="col-sm-6">
+
+                         {% if (configurations['marketplace_sellerorderstatus'] is defined and configurations['marketplace_sellerorderstatus']) %}
+                           <i class="fa fa-check" aria-hidden="true" ></i>
+                         {% else %}
+                           <i class="fa fa-close" ></i>
+                         {% endif %}
+
+                     </div>
+                   </div>
+                   <hr>
+
+                   <div class="form-group">
+                      <label class="col-sm-6 control-label" for="">{{ wkentry_mailtoseller }}</label>
+                        <div class="col-sm-6">
+
+                           {% if (configurations['marketplace_mailtoseller'] is defined and configurations['marketplace_mailtoseller']) %}
+                             <i class="fa fa-check" aria-hidden="true" ></i>
+                           {% else %}
+                             <i class="fa fa-close" ></i>
+                           {% endif %}
+
+                       </div>
+                     </div>
+                     <hr>
+
+                     <div class="form-group">
+                        <label class="col-sm-6 control-label" for="">{{ entry_seller_manage_order }}</label>
+                          <div class="col-sm-6">
+
+                             {% if (configurations['marketplace_seller_manage_order'] is defined and configurations['marketplace_seller_manage_order']) %}
+                               <i class="fa fa-check" aria-hidden="true" ></i>
+                             {% else %}
+                               <i class="fa fa-close" ></i>
+                             {% endif %}
+
+                         </div>
+                       </div>
+                       <hr>
+
+                       <div class="form-group">
+                          <label class="col-sm-6 control-label" for="">{{ entry_seller_manage_order }}</label>
+                            <div class="col-sm-6">
+
+                               {% if (configurations['marketplace_seller_manage_order'] is defined and configurations['marketplace_seller_manage_order']) %}
+                                 <i class="fa fa-check" aria-hidden="true" ></i>
+                               {% else %}
+                                 <i class="fa fa-close" ></i>
+                               {% endif %}
+
+                           </div>
+                         </div>
+                         <hr>
+                </fieldset>
+              </div>
+        </div>
+
+      {% else %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ warning_become_seller }}<button type="button" class="close" data-dismiss="alert">×</button> </div>
+      {% endif %}
+      {{ content_bottom }}</div>
+    {{ column_right }}</div>
+</div>
+
+{{ footer }}

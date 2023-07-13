@@ -1,0 +1,58 @@
+<div class="carousel brand">
+	<div class="container">
+		<div class="swiper-viewport">	
+			<div id="carousel{{ module }}" class="swiper-container">
+				<div class="swiper-wrapper">
+					{% for banner in banners %}
+						<div class="swiper-slide text-center">
+							{% if banner.link %}
+								<a href="{{ banner.link }}"><img src="{{ banner.image }}" alt="{{ banner.title }}" class="img-responsive m-auto" /></a>
+							{% else %}
+								<img src="{{ banner.image }}" alt="{{ banner.title }}" class="img-responsive m-auto" />
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+				<div class="swiper-pagination carousel{{ module }}"></div>
+				<div class="swiper-pager">				
+					<div class="swiper-button-prev"><i class="fa fa-angle-left"></i></div>
+					<div class="swiper-button-next"><i class="fa fa-angle-right"></i></div>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+<script><!--
+	$('#carousel{{ module }}').swiper({
+		mode: 'horizontal',
+		slidesPerView: 6,
+		paginationClickable: false,
+		nextButton: '.swiper-button-next',
+		prevButton: '.swiper-button-prev',
+		loop: true,
+		autoplay: 3000,
+		autoplayDisableOnInteraction: true,
+		breakpoints: {		
+			1199: {
+				slidesPerView: 5,
+				spaceBetween: 0
+			},
+			991: {
+				slidesPerView: 4,
+				spaceBetween: 0
+			},
+			767: {
+				slidesPerView: 3,
+				spaceBetween: 0
+			},
+			560: {
+				slidesPerView: 2,
+				spaceBetween: 0
+			},
+			375: {
+				slidesPerView: 1,
+				spaceBetween: 0
+			}
+		}
+	});
+--></script>

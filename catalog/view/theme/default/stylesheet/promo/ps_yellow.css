@@ -1,0 +1,149 @@
+.bx-next {
+position:absolute;
+top:40%;
+right:-50px;
+z-index:999;
+width: 30px;
+height: 30px;
+text-indent: -999999px;
+background: url(../../image/promo/yellow_next.png) no-repeat 0 -30px;
+}
+
+/*previous button*/
+.bx-prev {
+position:absolute;
+top:40%;
+left:-50px;
+z-index:999;
+width: 30px;
+height: 30px;
+text-indent: -999999px;
+background: url(../../image/promo/yellow_prev.png) no-repeat 0 -30px;
+}
+
+/*pager links*/
+.bx-pager a {
+margin-right: 5px;
+color: #fff;
+padding: 3px 8px 3px 6px;
+font-size: 12px;
+zoom:1;
+background: url(../../image/promo/yellow_pager.png) no-repeat 0 -20px;
+}
+
+/*auto start button*/
+.bx-auto .start {
+background: url(../../image/promo/yellow_auto.png) no-repeat 0 2px;
+padding-left: 13px;
+}
+
+/*auto stop button*/
+.bx-auto .stop {
+background: url(../../image/promo/yellow_auto.png) no-repeat 0 -14px;
+padding-left: 13px;
+}
+
+/*
+ * * End color scheme styles
+ * */
+
+
+/*next/prev button hover state*/
+.bx-next:hover,
+.bx-prev:hover {
+background-position: 0 0;
+}
+
+/*pager links hover and active states*/
+.bx-pager .pager-active,
+.bx-pager a:hover {
+background-position: 0 0;
+}
+
+/*pager wrapper*/
+.bx-pager {
+text-align:center;
+padding-top: 7px;
+font-size:12px;
+color:#666;
+}
+
+/*captions*/
+.bx-captions {
+text-align:center;
+font-size: 12px;
+padding: 7px 0;
+color: #666;
+}
+
+/*auto controls*/
+.bx-auto {
+text-align: center;
+padding-top: 15px;
+}
+
+.bx-auto a {
+color: #666;
+font-size: 12px;
+}
+
+#product_slider a.button, #product_slider a.exclusive {
+   margin: 0.5em auto;
+
+}
+
+#product_slider .product-price {
+    float: right;
+    width: 120px;
+}
+
+#product_slider a.product_image {
+}
+
+#product_slider .product-shop {
+ float:left;
+}
+
+#product_slider div.product_desc a, #product_slider ul li div.product_desc a:hover {
+    color: #3C3C3C;
+    font-weight: normal;
+    text-decoration: none;
+
+}
+
+.products_slider .bx-wrapper {
+   margin:0 auto;
+
+}
+
+.products_slider .bx-wrapper ul li {
+ text-align: center;
+
+}
+
+
+.products_slider h4 {
+		margin:7px 0;
+}
+
+.products_slider h4 a {
+        font-size: 14px;
+		text-decoration:none;
+		
+}
+
+#product_slider span.price {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.box-content .price-old{
+ color: #FF0000;
+    text-decoration: line-through;
+}
+
+
+.box-content .price-new {
+    font-weight: bold;
+	text-decoration: blink;
+}

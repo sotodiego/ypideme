@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+    <name>Marketplace Promotional Module</name>
+    <version>1.0.0</version>
+    <code>webkul_sell_mod</code>
+    <author>Webkul</author>
+    <link>http://webkul.com</link>
+
+    <file path="system/library/cart/cart.php">
+        <operation>
+            <search><![CDATA[
+            $cart_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "cart WHERE api_id = '" . (isset($this->session->data['api_id']) ? (int)$this->session->data['api_id'] : 0) . "' AND customer_id = '" . (int)$this->customer->getId() . "' AND session_id = '" . $this->db->escape($this->session->getId()) . "'");
+            ]]></search>
+            <add position="after"><![CDATA[
+            if(isset($_SERVER['HTTP_REFERER']) && isset($this->session->data['add_order_customer'])) {
+			        $url_components = parse_url($_SERVER['HTTP_REFERER']); 
+			
+			        if(isset($url_components['query']) && str_replace('route=','',$url_components['query']) == 'account/customerpartner/add_order') {
+				        $cart_query = $cart_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customerpartner_to_customer_cart WHERE api_id = '" . (isset($this->session->data['api_id']) ? (int)$this->session->data['api_id'] : 0) . "' AND customer_id = '" . (int)$this->session->data['add_order_customer']['customer_id'] . "' AND session_id = '" . $this->db->escape($this->session->getId()) . "'");
+			        }
+		        }
+              // Gift teaser code
+              $cart_products = $cart_query->rows;
+              $gifts = array();
+              $gift_quant = array();
+            	if (!isset($this->session->data['wk_promo_gifts']) && $this->config->get('wk_gift_gift_status') && $this->config->get('module_marketplace_status') && ($this->config->get('module_wk_crosssell_crosssell_status') || $this->config->get('module_wk_upsell_upsell_status'))) {
+
+    						if ($cart_products) {
+    							$date_now = date('Y-m-d H:i:s');
+    							$sql = "SELECT cg.related_id, cg.quantity, gr.parent_id, gr.parent_options, gr.child_id, gr.options FROM " . DB_PREFIX . "customer_gifts cg LEFT JOIN " . DB_PREFIX . "giftteasor_related gr ON (cg.related_id = gr.id) LEFT JOIN " . DB_PREFIX . "vendor_giftteasor vg ON (gr.giftteasor_id = vg.giftteasor_id) WHERE vg.date_end > '" . $date_now . "' AND (vg.quantity_status = 0 || vg.quantity > 0)";
+
+    							if ($this->customer->isLogged()) {
+    								$sql .= " AND cg.customer_id = '" . $this->customer->getId() . "'";
+    							} else {
+    								$sql .= " AND cg.customer_id = '0' AND cg.session_id = '" . $this->db->escape($this->session->getId()) . "'";
+    							}
+
+    							$customer_gifts = $this->db->query($sql)->rows;
+
+    							foreach ($customer_gifts as $gift_key => $giftteaser) {
+    								$parent = array();
+    								$child = array();
+    								foreach ($cart_products as $cart_key => $product) {
+    									if (!$parent && $giftteaser['parent_id'] == $product['product_id'] && $giftteaser['parent_options'] == $product['option']) {
+    										if ($child) {
+    											$gifts[] = $child['cart_id'];
+    											$gift_quant[$child['cart_id']] = $child['quantity'];
+
+    											if ($product['quantity'] == $child['quantity']) {
+    												unset($cart_products[$cart_key]);
+    												unset($cart_products[$child['key']]);
+    											} elseif ($product['quantity'] > $child['quantity']) {
+    												unset($cart_products[$child['key']]);
+    												$cart_products[$cart_key]['quantity'] = $product['quantity'] - $child['quantity'];
+    											} elseif ($product['quantity'] < $child['quantity']) {
+    												unset($cart_products[$cart_key]);
+    												$gift_quant[$child['cart_id']] = $product['quantity'];
+    												$cart_products[$child['key']]['quantity'] = $child['quantity'] - $product['quantity'];
+    											}
+
+    											unset($customer_gifts[$gift_key]);
+    											break;
+    										} else {
+    											$parent = array(
+    												'key'      => $cart_key,
+    												'quantity' => $product['quantity'],
+    												'cart_id'  => $product['cart_id']
+    											);
+    										}
+    									}
+    									if (!$child && $giftteaser['child_id'] == $product['product_id'] && $giftteaser['options'] == $product['option']) {
+    										if ($parent) {
+    											$gifts[] = $product['cart_id'];
+    											$gift_quant[$product['cart_id']] = $product['quantity'];
+
+    											if ($product['quantity'] == $parent['quantity']) {
+    												unset($cart_products[$cart_key]);
+    												unset($cart_products[$parent['key']]);
+    											} elseif ($product['quantity'] > $parent['quantity']) {
+    												unset($cart_products[$parent['key']]);
+    												$gift_quant[$product['cart_id']] = $parent['quantity'];
+    												$cart_products[$cart_key]['quantity'] = $product['quantity'] - $parent['quantity'];
+    											} elseif ($product['quantity'] < $parent['quantity']) {
+    												unset($cart_products[$cart_key]);
+    												$cart_products[$parent['key']]['quantity'] = $parent['quantity'] - $product['quantity'];
+    											}
+
+    											unset($customer_gifts[$gift_key]);
+    											break;
+    										} else {
+    											if ($giftteaser['quantity'] < $product['quantity']) {
+    												$child_quantity = $giftteaser['quantity'];
+    											} else {
+    												$child_quantity = $product['quantity'];
+    											}
+    											$child = array(
+    												'key'      => $cart_key,
+    												'quantity' => $child_quantity,
+    												'cart_id'  => $product['cart_id']
+    											);
+    										}
+    									}
+    								}
+    							}
+    						}
+
+                if (isset($customer_gifts) && is_array($customer_gifts)) {
+      						foreach ($customer_gifts as $gift) {
+      							$sql = "DELETE FROM " . DB_PREFIX . "customer_gifts WHERE related_id = '" . $gift['related_id'] . "'";
+
+      							if ($this->customer->isLogged()) {
+      								$sql .= " AND customer_id = '" . $this->customer->getId() . "'";
+      							} else {
+      								$sql .= " AND customer_id = '0' AND session_id = '" . $this->db->escape($this->session->getId()) . "'";
+      							}
+
+      							$this->db->query($sql);
+      						}
+                }
+    						$this->session->data['gifts'] = $gifts;
+    						$this->session->data['gift_quant'] = $gift_quant;
+            	}
+    	        // Gift teaser code ends here
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+            'recurring'       => $recurring
+            ]]></search>
+            <add position="before"><![CDATA[
+            'gift'            => $gift ? 1 : 0, // gift teaser customization
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+            $product_data[] = array(
+            ]]></search>
+            <add position="before"><![CDATA[
+            // gift code
+            $gift = 0;
+            if ($this->config->get('module_marketplace_status')) {
+            if (isset($gifts) && is_array($gifts) && in_array($cart['cart_id'], $gifts)) {
+ 							if ($gift_quant[$cart['cart_id']] < $cart['quantity']) {
+ 								$product_data[] = array(
+ 									'cart_id'          =>  $cart['cart_id'],
+ 									'product_id'       =>  $product_query->row['product_id'],
+ 									'name'             =>  $product_query->row['name'],
+ 									'model'            =>  $product_query->row['model'],
+ 									'shipping'         =>  $product_query->row['shipping'],
+ 									'image'            =>  $product_query->row['image'],
+ 									'option'           =>  $option_data,
+ 									'download'         =>  $download_data,
+ 									'quantity'         =>  $gift_quant[$cart['cart_id']],
+ 									'minimum'          =>  $product_query->row['minimum'],
+ 									'subtract'         =>  $product_query->row['subtract'],
+ 									'stock'            =>  $stock,
+ 									// 'price'            =>  0,
+ 									// 'total'            =>  0,
+
+ 									/*commission code added*/
+ 									'price'           => ($price + $option_price) + $commission_amount_total,
+ 									'total'           => (($price + $option_price) + $commission_amount_total) * $cart['quantity'],
+ 									'actual_price'           => ($price + $option_price),
+ 									'actual_total'           => ($price + $option_price) * $cart['quantity'],
+ 									/*commission code added*/
+
+ 									'reward'           =>  $reward * $cart['quantity'],
+ 									'points'           =>  ($product_query->row['points'] ? ($product_query->row['points'] + $option_points) * $cart['quantity'] : 0),
+ 									'tax_class_id'     =>  $product_query->row['tax_class_id'],
+ 									'weight'           =>  ($product_query->row['weight'] + $option_weight) * $cart['quantity'],
+ 									'weight_class_id'  =>  $product_query->row['weight_class_id'],
+ 									'length'           =>  $product_query->row['length'],
+ 									'width'            =>  $product_query->row['width'],
+ 									'height'           =>  $product_query->row['height'],
+ 									'length_class_id'  =>  $product_query->row['length_class_id'],
+ 									'recurring'        =>  $recurring,
+ 									'gift'             =>  1
+ 								);
+ 								$cart['quantity'] = $cart['quantity'] - $gift_quant[$cart['cart_id']];
+ 								$gift = 0;
+ 							} else {
+ 								$gift = 1;
+ 								$price = 0;
+ 								$option_price = 0;
+ 								$commission_amount_total = 0;
+ 							}
+            } else {
+ 							$gift = 0;
+ 						}
+            }
+            // gift code ends here
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+            'reward'          => $reward * $cart['quantity'],
+            ]]></search>
+            <add position="before"><![CDATA[
+              'actual_price'           => ($price + $option_price ),
+              'actual_total'           => ($price + $option_price) * $cart['quantity'],
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/checkout/cart.php">
+        <operation>
+            <search><![CDATA[
+            $recurring = '';
+            ]]></search>
+            <add position="before"><![CDATA[
+              // gift code
+              if ($this->config->get('module_marketplace_status') && $this->config->get('module_wk_crosssell_crosssell_status') && isset($product['gift']) && $product['gift']) {
+                $price = html_entity_decode($this->config->get('wk_gift_gift_label')[$this->config->get('config_language_id')]);
+              }
+              // gift code ends here
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+            if (!empty($this->request->post['quantity'])) {
+            ]]></search>
+            <add position="after"><![CDATA[
+            // gift code
+            if ($this->config->get('module_marketplace_status') && $this->config->get('module_wk_crosssell_crosssell_status')) {
+            foreach ($this->request->post['quantity'] as $post_key => $post_quantity) {
+              if (isset($this->session->data['gifts'][$post_key])) {
+                $total_quantity = $this->session->data['gifts'][$post_key] + $post_quantity;
+                $this->request->post['quantity'][$post_key] = $total_quantity;
+              }
+            }
+            }
+            // gift code ends here
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+            $this->cart->remove($this->request->post['key']);
+            ]]></search>
+            <add position="replace"><![CDATA[
+            // gift code
+
+            if (isset($this->session->data['gifts'][$this->request->post['key']])) {
+                $this->cart->update($this->request->post['key'], $this->session->data['gifts'][$this->request->post['key']]);
+                unset($this->session->data['gifts'][$this->request->post['key']]);
+            } else {
+                $this->cart->remove($this->request->post['key']);
+            }
+
+            // gift code ends here
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/checkout/confirm.php">
+        <operation>
+            <search><![CDATA[
+            $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency'])
+            ]]></search>
+            <add position="replace"><![CDATA[
+                isset($product['gift']) && $product['gift'] ? html_entity_decode($this->config->get('wk_gift_gift_label')[$this->config->get('config_language_id')]) : $this->currency->format($product['actual_price'], $this->session->data['currency'])
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/account/order.php">
+        <operation>
+            <search><![CDATA[
+            $this->currency->format($product['price'] + ($this->config->get('config_tax') ? $product['tax'] : 0), $order_info['currency_code'], $order_info['currency_value'])
+            ]]></search>
+            <add position="replace"><![CDATA[
+                $product['price'] == 0 ? html_entity_decode($this->config->get('wk_gift_gift_label')[$this->config->get('config_language_id')]) : $this->currency->format($product['price'] + ($this->config->get('config_tax') ? $product['tax'] : 0), $order_info['currency_code'], $order_info['currency_value'])
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/account/customerpartner/orderlist.php">
+        <operation>
+            <search><![CDATA[
+            $orders = $this
+            ]]></search>
+            <add position="before"><![CDATA[
+                // gift code
+                if (isset($this->request->cookie['time_diff'])) {
+                    $time_diff = $this->request->cookie['time_diff'] * 3600;
+                } else {
+                    $time_diff = 0;
+                }
+                // gift code ends here
+            ]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[
+            $products = $this
+            ]]></search>
+            <add position="before"><![CDATA[
+              // gift code
+              $date_added = strtotime($order_list['date_added']) + $time_diff;
+              $orders[$key]['date_added'] = date('Y-m-d H:i:s', $date_added);
+              // gift code ends here
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/account/customerpartner/productlist.php">
+        <operation>
+            <search><![CDATA[
+            if (!$this->error) {
+            ]]></search>
+            <add position="before"><![CDATA[
+                // gift code
+              if ($this->config->get('module_marketplace_status')) {
+            if ($this->config->get('module_wk_upsell_upsell_status') || $this->config->get('module_wk_crosssell_crosssell_status') || $this->config->get('wk_gift_gift_status')) {
+                $this->load->model('account/promotional');
+                $comb_exist = $this->model_account_promotional->checkPromoProduct($this->request->post['selected']);
+
+                if ($comb_exist) {
+                    $this->language->load('account/customerpartner/upsell');
+                    $this->error['warning'] = sprintf($this->language->get('error_combination'), $comb_exist);
+                }
+            }
+            }
+                // gift code ends here
+            ]]></add>
+        </operation>
+    </file>
+    <file path="catalog/model/account/customerpartner.php">
+      <operation>
+        <search><![CDATA[
+        if (isset($data['filter_low_stock']))
+        ]]></search>
+        <add position="before"><![CDATA[
+      		// product with stock (promotional customization)
+      		if (isset($data['filter_stock'])) {
+      			$sql .= " AND p.quantity > 0";
+      		}
+        ]]></add>
+      </operation>
+    </file>
+    <file path="catalog/model/checkout/order.php">
+      <operation>
+        <search><![CDATA[
+        // Stock subtraction
+        ]]></search>
+        <add position="before"><![CDATA[
+      		// subtracting stock (promotional customization)
+          if ($this->config->get('module_marketplace_status') && $this->config->get('module_wk_crosssell_crosssell_status')) {
+            $this->load->model('extension/total/crosssell');
+            $this->model_extension_total_crosssell->subtractStock();
+          }
+        ]]></add>
+      </operation>
+    </file>
+    <file path="catalog/controller/checkout/success.php">
+      <operation>
+        <search><![CDATA[
+          $this->cart->clear();
+        ]]></search>
+        <add position="before"><![CDATA[
+        if ($this->config->get('module_marketplace_status') && $this->config->get('module_wk_crosssell_crosssell_status')) {
+          $cart_data = array();
+          if($this->cart->getProducts()) {
+            $cart_data = $this->cart->getProducts();
+          }
+
+          $existing_cart_id = array();
+          foreach ($cart_data as $value) {
+            $existing_cart_id[] = $value['cart_id'];
+          }
+
+          $this->load->model('account/product_saved_option');
+
+          foreach ($this->model_account_product_saved_option->getMappedCart() as $value) {
+            $mapped_cart = json_decode($value['cart_id']);
+            $total_mapped_cart = count($mapped_cart);
+
+            $total_found = 0;
+
+            foreach ($mapped_cart as $cart_id_value) {
+
+              if(in_array($cart_id_value,$existing_cart_id)) {
+                $total_found++;
+              }
+            }
+            if($total_mapped_cart == $total_found) {
+              $this->model_account_product_saved_option->substractQuantity($value['type'], $value['i_id']);
+              $this->model_account_product_saved_option->deleteMapping($value['id']);
+            }
+          }
+        }
+        ]]></add>
+      </operation>
+    </file>
+    <file path="system/library/cart/cart.php">
+      <operation>
+        <search><![CDATA[
+          public function update($cart_id, $quantity) {
+        ]]></search>
+        <add position="before" offset="2"><![CDATA[
+          if($this->db->getLastId()) {
+      			return $this->db->getLastId();
+      		} else {
+      			return $this->db->query("SELECT cart_id FROM " . DB_PREFIX . "cart WHERE customer_id = '" . (int)$this->customer->getId() . "' AND session_id = '" . $this->db->escape($this->session->getId()) . "' AND product_id = '" . (int)$product_id . "' AND recurring_id = '" . (int)$recurring_id . "' AND `option` = '" . $this->db->escape(json_encode($option)) . "'")->row['cart_id'];
+      		}
+        ]]></add>
+      </operation>
+    </file>
+</modification>

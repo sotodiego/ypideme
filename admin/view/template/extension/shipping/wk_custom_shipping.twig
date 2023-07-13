@@ -1,0 +1,468 @@
+{{ header }}{{ column_left }} 
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-flat" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %} 
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %} 
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if (error_warning) %} 
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }} 
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %} 
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-flat" class="form-horizontal">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }}</a></li>
+            <li><a href="#tab-shipping" data-toggle="tab">{{ tab_shipping }}</a></li>
+            <li><a href="#tab-label" data-toggle="tab">{{ tab_label }}</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-general">
+              <div class="form-group required">
+                <label class="col-sm-2 control-label" for="input-title">{{ title }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="shipping_wk_custom_shipping_title" value="{{ shipping_wk_custom_shipping_title }}" placeholder="{{ title }}" id="input-title" class="form-control" />
+                  {% if (error_title) %} 
+                    <div class="text-danger">{{ error_title }}</div>
+                  {% endif %} 
+                </div>
+              </div>
+
+              <div class="form-group required">
+                <label class="col-sm-2 control-label" for="input-method_title">{{ method_title }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="shipping_wk_custom_shipping_method_title" value="{{ shipping_wk_custom_shipping_method_title }}" placeholder="{{ method_title }}" id="input-method_title" class="form-control" />
+                  {% if (error_method_name) %} 
+                    <div class="text-danger">{{ error_method_name }}</div>
+                  {% endif %} 
+                </div>
+              </div>
+
+              <div class="form-group required">
+                <label class="col-sm-2 control-label" for="input-method_select">{{ method_select }}</label>
+                <div class="col-sm-10">
+                  <select name="shipping_wk_custom_shipping_method" id="input-method_select" class="form-control">
+                     <option value="">Select</option>
+                     <option value="flat" {% if (shipping_wk_custom_shipping_method == 'flat') %} {{ "selected" }} {% endif %}>Flat Shipping</option>
+                     <option value="matrix" {% if (shipping_wk_custom_shipping_method == 'matrix') %} {{ "selected" }} {% endif %}>Matrix Based Shipping</option>
+                     <option value="both" {% if (shipping_wk_custom_shipping_method == 'both') %} {{ "selected" }} {% endif %}>Mix Shipping</option>
+                  </select>
+                  {% if (error_method) %} 
+                    <div class="text-danger">{{ error_method }}</div>
+                  {% endif %} 
+                </div>
+              </div>
+
+              <div class="form-group required">
+                <label class="col-sm-2 control-label" for="input-admin_flatrate">{{ admin_flatrate }}</label>
+                <div class="col-sm-10">
+                  <input type="number" min = "1" name="shipping_wk_custom_shipping_admin_flatrate" value="{{ shipping_wk_custom_shipping_admin_flatrate }}" placeholder="{{ admin_flatrate }}" id="input-admin_flatrate" class="form-control" onkeyup="if (isNaN($(this).val()) || $(this).val() < 1 || $(this).val() > 500) { $(this).val(''); }" />
+                  {% if (error_admin_flatrate) %} 
+                    <div class="text-danger">{{ error_admin_flatrate }}</div>
+                  {% endif %} 
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-texclass">{{ texclass }}</label>
+                <div class="col-sm-10">
+                  <select name="shipping_wk_custom_shipping_tax_class_id" id="input-texclass" class="form-control" >
+                    <option value="">Select</option>
+                    {% for tax_class in tax_classes %} 
+                    {% if (tax_class['tax_class_id'] == shipping_wk_custom_shipping_tax_class_id) %} 
+                    <option value="{{ tax_class['tax_class_id'] }}" selected="selected">{{ tax_class['title'] }}</option>
+                    {% else %} 
+                    <option value="{{ tax_class['tax_class_id'] }}">{{ tax_class['title'] }}</option>
+                    {% endif %} 
+                    {% endfor %} 
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_error_msg">{{ error_msg }}</label>
+                <div class="col-sm-10">
+                  <textarea name="shipping_wk_custom_shipping_error_msg" id="input-shipping_wk_custom_shipping_error_msg" rows="3" class="form-control">{{ shipping_wk_custom_shipping_error_msg }}</textarea>
+                  {% if (custom_error_msg is defined and custom_error_msg) %} 
+                  <div class = "text-danger">{{ custom_error_msg }}</div>
+                  {% endif %} 
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_geo_zone_id">{{ entry_geo_zone }}</label>
+                <div class="col-sm-10">
+                  <select name="shipping_wk_custom_shipping_geo_zone_id" id="input-shipping_wk_custom_shipping_geo_zone_id" class="form-control">
+                    <option value="0">{{ text_all_zones }}</option>
+                    {% for geo_zone in geo_zones %} 
+                    {% if (geo_zone['geo_zone_id'] == shipping_wk_custom_shipping_geo_zone_id) %} 
+                    <option value="{{ geo_zone['geo_zone_id'] }}" selected="selected">{{ geo_zone['name'] }}</option>
+                    {% else %} 
+                    <option value="{{ geo_zone['geo_zone_id'] }}">{{ geo_zone['name'] }}</option>
+                    {% endif %} 
+                    {% endfor %} 
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_status">{{ entry_status }}</label>
+                <div class="col-sm-10">
+                  <select name="shipping_wk_custom_shipping_status" id="input-shipping_wk_custom_shipping_status" class="form-control">
+                    {% if (shipping_wk_custom_shipping_status) %} 
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %} 
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %} 
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_seller_status"><span data-toggle="tooltip" title="{{ entry_seller_status_info }}">{{ entry_seller_status }}</span></label>
+                <div class="col-sm-10">
+                  <select name="shipping_wk_custom_shipping_seller_status" id="input-shipping_wk_custom_shipping_seller_status" class="form-control">
+                    {% if (shipping_wk_custom_shipping_seller_status) %} 
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %} 
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %} 
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_seller_details">{{ entry_seller_details }}</label>
+                <div class="col-sm-10">
+                  <select name="shipping_wk_custom_shipping_seller_details" id="input-input-shipping_wk_custom_shipping_seller_details" class="form-control">
+                    {% if (shipping_wk_custom_shipping_seller_details) %} 
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %} 
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %} 
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_sort_order">{{ entry_sort_order }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="shipping_wk_custom_shipping_sort_order" value="{{ shipping_wk_custom_shipping_sort_order }}" placeholder="{{ entry_sort_order }}" id="input-shipping_wk_custom_shipping_sort_order" class="form-control" />
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-shipping">
+              <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab-event" data-toggle="tab">{{ entry_event }}</a></li>
+                <li><a href="#tab-priority" data-toggle="tab">{{ entry_priority }}</a></li>
+              </ul>
+              <div class="tab-content">
+                <div class="tab-pane active" id="tab-event">
+                  <h3>{{ entry_event }}</h3>
+                  <div class ="panel-body">
+
+                    <div class="form-group">
+                      <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_event_status">{{ entry_status }}</label>
+                      <div class="col-sm-10">
+                        <select name="shipping_wk_custom_shipping_event_status" id="input-shipping_wk_custom_shipping_event_status" class="form-control">
+                          {% if (shipping_wk_custom_shipping_event_status) %} 
+                          <option value="1" selected="selected">{{ text_enabled }}</option>
+                          <option value="0">{{ text_disabled }}</option>
+                          {% else %} 
+                          <option value="1">{{ text_enabled }}</option>
+                          <option value="0" selected="selected">{{ text_disabled }}</option>
+                          {% endif %} 
+                        </select>
+                      </div>
+                    </div>
+
+                    <table class ="table table-bordered table-responsive">
+                      <thead>
+                        <tr>
+                          <th class="text-center">{{ entry_from }}</th>
+                          <th class="text-center">{{ entry_to }}</th>
+                          <th class="text-center" style = "width : 10%;">{{ entry_prefix }}</th>
+                          <th class="text-center"  style = "width : 16%;">{{ entry_type }}</th>
+                          <th class="text-center">{{ entry_amount }}</</th>
+                          <th class="text-center"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% if (shipping_wk_custom_shipping_event_based is defined and shipping_wk_custom_shipping_event_based) %}
+                        {% set shippingRow =  0 %}
+                        {% for key,value in shipping_wk_custom_shipping_event_based %} 
+                                  <tr id="shipping_value_row[{{ key }}]">
+                                    <td class="text-center">
+                                      <div class="input-group date">
+                                        <input type="text" name="date_from[{{ key }}]" value="{{value['datefrom'] }}" placeholder="{{ entry_from }}" data-date-format="YYYY-MM-DD" id="input-entry-from" class="form-control" />
+                                        <span class="input-group-btn">
+                                          <button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+                                        </span>
+                                      </div>
+                                    </td>
+                                     <td class="text-center">
+                                      <div class="input-group date">
+                                        <input type="text" name="date_to[{{ key }}]" value="{{value['dateto'] }}" placeholder="{{ entry_to }}" data-date-format="YYYY-MM-DD" id="input-entry-to" class="form-control" />
+                                        <span class="input-group-btn">
+                                          <button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+                                        </span>
+                                      </div>
+                                     </td>
+                                     <td>
+                                      <select name = "prefix[{{ key }}]" class="form-control">         
+                                        <option value = "+"  {% if (value['prefix'] is defined and value['prefix'] == '+') %} selected {% endif %}>+</option>
+                                        <option value = "-"  {% if (value['prefix'] is defined and value['prefix'] == '-') %} selected {% endif %}>-</option>
+                                     </select>
+                                    </td>
+                                    <td>
+                                     <select name = "type[{{ key }}]" class="form-control">;
+                                       <option value = "f" {% if (value['type'] is defined and value['type'] == 'f') %} selected {% endif %}>Fixed</option>
+                                       <option value = "p" {% if (value['type'] is defined and value['type'] == 'p') %} selected {% endif %}>Percentage</option>
+                                    </select>
+                                   </td>
+                                   <td>
+                                    <input name = "amount[{{ key }}]" type ="number" min = "1" step = "0.01" class ="form-control" value ="{{ value['amount'] }}" placeholder = "amount"  onkeyup="if (isNaN($(this).val()) || $(this).val() > 1000 || $(this).val() < 1) { $(this).val(''); } "/>
+                                   </td>
+                                   <td class="text-center">
+                                     <button type="button" id="shipping_value_row[{{ key }}]" onclick="remove(this.id);" data-toggle="tooltip" title="Remove" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>
+                                   </td>
+                                  </tr>
+                                 {% set shippingRow =  key %}
+                                 
+                      {% endfor %}
+                      {% endif %} 
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="5"></td>
+                          <td class="text-center"><button type="button" onclick="addShipping()" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="Add New Shipping"><i class="fa fa-plus-circle"></i></button></td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+                <div class="tab-pane" id="tab-priority">
+                  <h3>{{ entry_priority }}</h3>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_priority_status">{{ entry_status }}</label>
+                    <div class="col-sm-10">
+                      <select name="shipping_wk_custom_shipping_priority_status" id="input-shipping_wk_custom_shipping_priority_status" class="form-control">
+                        {% if (shipping_wk_custom_shipping_priority_status) %} 
+                        <option value="1" selected="selected">{{ text_enabled }}</option>
+                        <option value="0">{{ text_disabled }}</option>
+                        {% else %} 
+                        <option value="1">{{ text_enabled }}</option>
+                        <option value="0" selected="selected">{{ text_disabled }}</option>
+                        {% endif %} 
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_high_priority">{{ entry_high }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <label class="control-label">{{ text_days }}</label>
+                          <input type="number" min = "0" name="shipping_wk_custom_shipping_high_priority_day" value="{{ shipping_wk_custom_shipping_high_priority_day }}" placeholder="{{ text_days }}" id="input-shipping_wk_custom_shipping_high_priority_day" class="form-control" onkeyup="if (isNaN($(this).val()) || $(this).val() > 1000 || $(this).val() < 1) { $(this).val(''); } "/>
+                        </div>
+                        <div class="col-sm-6">
+                          <label class="control-label">{{ text_charge }}</label>
+                          <input type="number" min = "0" name="shipping_wk_custom_shipping_high_priority_amount" value="{{ shipping_wk_custom_shipping_high_priority_amount }}" placeholder="{{ text_charge }}" id="input-shipping_wk_custom_shipping_high_priority_amount" class="form-control" onkeyup="if (isNaN($(this).val()) || $(this).val() > 1000 || $(this).val() < 1) { $(this).val(''); } "/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_mid_priority">{{ entry_medium }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <label class="control-label">{{ text_days }}</label>
+                          <input type="number" min = "0" name="shipping_wk_custom_shipping_mid_priority_day" value="{{ shipping_wk_custom_shipping_mid_priority_day }}" placeholder="{{ text_days }}" id="input-shipping_wk_custom_shipping_mid_priority_day" class="form-control" onkeyup="if (isNaN($(this).val()) || $(this).val() > 1000 || $(this).val() < 1) { $(this).val(''); } "/>
+                        </div>
+                        <div class="col-sm-6">
+                          <label class="control-label">{{ text_charge }}</label>
+                          <input type="number" min = "0" name="shipping_wk_custom_shipping_mid_priority_amount" value="{{ shipping_wk_custom_shipping_mid_priority_amount }}" placeholder="{{ text_days }}" id="input-shipping_wk_custom_shipping_mid_priority_amount" class="form-control" onkeyup="if (isNaN($(this).val()) || $(this).val() > 1000 || $(this).val() < 1) { $(this).val(''); } "/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_low_priority">{{ entry_low }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <label class="control-label">{{ text_days }}</label>
+                          <input type="number" min = "0" name="shipping_wk_custom_shipping_low_priority_day" value="{{ shipping_wk_custom_shipping_low_priority_day }}" placeholder="{{ text_days }}" id="input-shipping_wk_custom_shipping_low_priority_day" class="form-control" onkeyup="if (isNaN($(this).val()) || $(this).val() > 1000 || $(this).val() < 1) { $(this).val(''); } "/>
+                        </div>
+                        <div class="col-sm-6">
+                          <label class="control-label">{{ text_charge }}</label>
+                          <input type="number" min = "0" name="shipping_wk_custom_shipping_low_priority_amount" value="{{ shipping_wk_custom_shipping_low_priority_amount }}" placeholder="{{ text_charge }}" id="input-shipping_wk_custom_shipping_low_priority_amount" class="form-control" onkeyup="if (isNaN($(this).val()) || $(this).val() > 1000 || $(this).val() < 1) { $(this).val(''); } "/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-label">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_label_status">{{ entry_status }}</label>
+                <div class="col-sm-10">
+                  <select name="shipping_wk_custom_shipping_label_status" id="input-shipping_wk_custom_shipping_label_status" class="form-control">
+                    {% if (shipping_wk_custom_shipping_label_status) %} 
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %} 
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %} 
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_seller_label">{{ entry_seller_label }}</label>
+                <div class="col-sm-10">
+                  <select name="shipping_wk_custom_shipping_seller_label" id="input-shipping_wk_custom_shipping_seller_label" class="form-control">
+                    {% if (shipping_wk_custom_shipping_seller_label) %} 
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %} 
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %} 
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shipping_wk_custom_shipping_seller_custom_logo">{{ entry_seller_logo }}</label>
+                <div class="col-sm-10">
+                  <select name="shipping_wk_custom_shipping_seller_custom_logo" id="input-shipping_wk_custom_shipping_seller_custom_logo" class="form-control">
+                    {% if (shipping_wk_custom_shipping_seller_custom_logo) %} 
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %} 
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %} 
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type = "text/javascript">
+
+{% if error_event_shipping is defined and error_event_shipping %}
+$('a[href="#tab-general"]').parent('li').removeClass('active');
+$('a[href="#tab-shipping"]').parent('li').addClass('active');
+$('a[href="#tab-event"]').parent('li').addClass('active');
+$('#tab-general').removeClass('active');
+$('#tab-shipping').addClass('active');
+$('#tab-event').addClass('active');
+{% endif %}
+
+</script>
+
+<script type = "text/javascript">
+  var shippingRow = {{ shippingRow }} + 1;
+
+console.log(shippingRow);
+function addShipping() {
+  html   = '<tr id="shipping_value_row['+shippingRow+']\">';
+  html += '<td class="text-center">';
+  html += '<div class="input-group date">';
+  html += '<input type="text" name="date_from['+shippingRow+']\" value="" placeholder="{{ entry_from }}" data-date-format="YYYY-MM-DD" id="input-entry-from" class="form-control" />';
+  html += '<span class="input-group-btn">';
+  html += '<button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>';
+  html += '</span></div></td>';
+  html += '<td class="text-center">';
+  html += '<div class="input-group date">';
+  html += '<input type="text" name="date_to['+shippingRow+']\" value="{{value['dateto'] }}" placeholder="{{ entry_to }}" data-date-format="YYYY-MM-DD" id="input-entry-to" class="form-control" />';
+  html += '<span class="input-group-btn">';
+  html += '<button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>';
+  html += '</span> </div></td>';
+  html += '<td><select name = "prefix['+shippingRow+']\" class="form-control">';
+  html += '<option value = "+">+</option><option value = "-">-</option>';
+  html += '</select></td>'
+  html += '<td><select name = "type['+shippingRow+']\" class="form-control">';
+  html += '<option value = "f">Fixed</option><option value = "p">Percentage</option>';
+  html += '</select></td>'
+  html += '<td><input name = "amount['+shippingRow+']\" type ="number" min = "1" step = "0.01" class ="form-control" value ="" placeholder = "amount"  onkeyup="if (isNaN($(this).val()) || $(this).val() > 1000 || $(this).val() < 1) { $(this).val(\'\'); } "/></td>';
+  html += '<td class="text-center"><button type="button" id="shipping_value_row['+shippingRow+']\" onclick="remove(this.id);" data-toggle="tooltip" title="Remove" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td></tr>'
+  $('tbody').append(html);
+
+  shippingRow =   shippingRow + 1;
+  
+  $('.date').datetimepicker({
+			language: '{{ datepicker }}',
+			pickTime: false
+		});
+
+		$('.time').datetimepicker({
+			language: '{{ datepicker }}',
+			pickDate: false
+		});
+
+		$('.datetime').datetimepicker({
+			language: '{{ datepicker }}',
+			pickDate: true,
+			pickTime: true
+		});
+}
+
+function remove(id) {
+  var elem = document.getElementById(id);
+   elem.remove();
+}
+</script>
+<script type = "text/javascript">
+
+  $('.date').datetimepicker({
+        language: '{{ datepicker }}',
+        pickTime: false
+      });
+
+  $('.time').datetimepicker({
+    language: '{{ datepicker }}',
+    pickDate: false
+  });
+
+  $('.datetime').datetimepicker({
+    language: '{{ datepicker }}',
+    pickDate: true,
+    pickTime: true
+  });
+
+</script>
+
+{{ footer }} 

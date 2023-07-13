@@ -1,0 +1,160 @@
+{{ header }}
+<div id="content-blogs" class="container">
+	<ul class="breadcrumb">
+	{% for breadcrumb in breadcrumbs %}
+		<li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+	{% endfor %}
+</ul>
+<div class="row">{{ column_left }}
+		{% if column_left and column_right %}
+			{% set class = 'col-sm-6' %}
+		{% elseif column_left or column_right %}
+			{% set class = 'col-sm-9' %}
+		{% else %}
+			{% set class = 'col-sm-12' %}
+		{% endif %}
+		<div id="content" class="{{ class }}">{{ content_top }}	
+		<h2 class="page_title">{{ heading_title }}</h2>		
+			<div class="row">
+				{# Artcile wrapper #}
+				<div class="article-container">
+					<div class="col-sm-12 clearfix">						
+						{% if image %}
+				            <ul class="thumbnails">				            
+				              <li ><div class="thumbnail"><img src="{{ image }}" title="{{ heading_title }}" alt="{{ heading_title }}" /></div></li>
+				          	</ul>
+				        {% endif %}
+					</div>
+					<div class="col-sm-12 clearfix">
+						<div class="caption-blog blog-block">
+							<div class="date-comment">
+								{% if blog_date %}
+									<span class="block-day">
+										<i class="fa fa-calendar-o"></i><span class="day">{{ blog_date }}</span>
+									</span>	
+								{% endif %}
+								<div class="blogdesk_info">								
+									<i class="fa fa-comments-o"></i><span class="blog-comment">{{ comment_count }} {{ text_comment }}</span>
+								</div>
+								</div>					
+							<div class="singblog-description blog-text">
+								<span>{{ description }}</span>									
+							</div>
+						</div>
+						{# Article Tag #}
+						{% if tags %}
+							<p class="blog-comment">{{ text_tags }}
+								{% set count_tag = 0 %}
+								{% for tag in tags %}
+										{% if count_tag < tags | length -1 %}
+											<span>{{ tag.name }}</span>, 
+											{% else %}
+												<span>{{ tag.name }}</span>
+										{% endif %}
+									{% set count_tag = count_tag+1 %}
+								{% endfor %}
+							</p>
+						{% endif %}
+						{% if visitor_comment %}
+						<div class="comment_cust">
+				            <div><h4 class="leave-hedding">{{ text_on_comment }}</h4></div>
+				            <div class="commentlist">
+				                <div class="row">
+				                 <div class="col-sm-12">
+				                 <ul>
+				            	{% for comment in visitor_comment %}
+				            		<li class="comment-item">
+				                      	<div class="comment-text clearfix">
+					                        <div class="user_img"><i class="fa fa-user"></i></div>
+					                        <div class="comment-desc">
+					                        	<div class="name-date">
+						                          <div class="name">{{comment.author}}</div>
+						                          <div class="date"> <i class="fa fa-clock-o"></i>  {{comment.date_added}}</div>
+					                          	</div>
+					                          	<div class="comment-dis">{{comment.comment_text}}</div>
+					                        </div>
+				                        </div>
+				                    </li>
+				                	{% endfor %}
+					            	</ul>
+				                  </div>
+				            	</div>
+				            </div>
+				        </div>
+			            {% endif %}
+						{# Visitor Comment #}
+						<div id="post_comment" class="post-comment">
+							<h5 class="leave-hedding"> {{ text_add_comment }}</h5>
+							<form  id="commnt_form" class="form-horizontal" method="post" onsubmit="saveComment();return false">
+								<div class="row">
+								<div class="col-sm-6 ">
+									<div class="form-group required">
+										<label class="control-label">{{ entry_author }}</label>										
+										<input type="text" name="author"  placeholder="{{ entry_author }}" class="form-control" required/>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group required">
+										<label class="control-label">{{ entry_email }}</label>										
+										<input type="email" name="email" placeholder="{{ entry_email }}" class="form-control" required/>										
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<div class="form-group required">
+										<label class="control-label">{{ entry_comment }}</label>
+										<div class="">
+											<textarea name="comment_text" placeholder="{{ entry_comment }}"  class="form-control" rows="6" maxlength="250" minlength="25" required></textarea>	
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<div class="form-group">
+										<div class="text-left">
+											<button type="submit" class="btn btn-group-sm btn-default" name="button" >{{ text_leave_comment }}</button>
+										</div>
+									</div>
+								</div>
+								</div>
+							</form>
+						</div>
+						{# commnent form #}	
+						{# Artcile wrapper #}						
+					</div>
+				</div>				
+			</div>
+		</div>
+		{{ column_right }}
+	</div>
+	{{ content_bottom }}
+</div>
+<script><!--
+function saveComment(){
+	const article_id = {{ article_id }};	
+	var data= $("#commnt_form").serialize();
+	data = data + ('&article_id=' + article_id);
+	$.ajax({
+		url: 'index.php?route=blog/article/write',
+		type: 'post',
+		data:data,
+		dataType: 'json',
+		success: function(json) {
+			$('.alert-dismissible').remove();
+			if (json['error']) {
+			$('#commnt_form').before('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '<button type="button" class="close" data-dismiss="alert" >×</button></div>');
+			}
+			if (json['success']) {
+				$('#commnt_form').before('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+
+				$('input[name=\'author\']').val('');
+				$('textarea[name=\'comment_text\']').val('');
+				$('input[name=\'email\']').val('');
+			}
+		},
+		error: function (error) {
+			console.log(error);
+		}
+	});
+}
+
+//--></script>
+{{ footer }}

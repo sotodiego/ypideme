@@ -1,0 +1,82 @@
+{% if categories %}
+	<nav id="menu" class="navbar navbar_menu">
+		<div class="navbar-header">			
+			<button type="button" class="btn btn-navbar navbar-toggle" id="btnMenuBar"><i class="fa fa-bars"></i></button>
+		</div>
+		<div id="topCategoryList" class="main-menu menu-navbar clearfix" data-more={{ text_more }}> 
+			<div class="menu-close hidden-lg hidden-md"><span id="category" class="">{{ text_menu }}</span><i class="fa fa-close"></i></div> 
+			<ul class="nav navbar-nav">
+				<li class="menulist home"><a id="home" href="{{ home }}" >{{ text_home }}</a></li>
+				{% for category in categories %}
+					{% if category.children %}
+						<li class="dropdown menulist">
+							<a href="{{ category.href }}" class="dropdown-toggle" aria-expanded="false">{{ category.name }}</a>
+							{% if category.column > 1 %}
+								<div class="dropdown-menu navcol-menu item-column column-{{ category.column }}">
+									<div class="dropdown-inner">
+										{% for children in category.children|batch(category.children|length / category.column|round(1, 'ceil')) %}
+											<ul class="list-unstyled childs_1">
+												{% for child in children %}
+													<li class="dropdown-submenu {% if child.grand_childs %}sub-menu-item{% endif %}" >
+														<a href="{{ child.href }}" class="dropdown-toggle" aria-expanded="false">{{ child.name }}</a>
+														{% if child.grand_childs %}
+															<ul class="list-unstyled sub-menu ">
+																{% for grand_child in child.grand_childs %}
+																	<li>
+																		<a href="{{ grand_child.href }}" >{{ grand_child.name }}</a>
+																	</li>
+																{% endfor %}
+															</ul>
+														{% endif %}
+													</li>
+												{% endfor %}
+											</ul>
+										{% endfor %}
+									</div>
+									{% if category.thumb %}
+										<div class="col-sm-12 image-menu"><img  src="{{ category.thumb }}" alt="shop"  class="img-responsive"/></div>
+									{% endif %}
+								</div>
+							{% else %}
+								<div class="dropdown-menu navcol-menu column-1 ">
+									<div class="dropdown-inner">
+										{% for children in category.children|batch(category.children|length / category.column|round(1, 'ceil')) %}
+											<ul class="list-unstyled childs_1">
+												{% for child in children %}
+													{% if child.grand_childs %}
+														<li class="dropdown-submenu {% if child.grand_childs %}sub-menu-item{% endif %}" >
+															<a href="{{ child.href }}" class="dropdown-toggle" aria-expanded="false">{{ child.name }}</a>
+															<i class="fa fa-caret-right" aria-hidden="true"></i>
+															{% if child.grand_childs %}
+																<ul class="list-unstyled sub-menu ">
+																	{% for grand_child in child.grand_childs %}
+																		<li>
+																			<a href="{{ grand_child.href }}" >{{ grand_child.name }}</a>
+																		</li>
+																	{% endfor %}
+																</ul>
+															{% endif %}
+														</li>
+													{% else %}
+														<li class="" >
+															<a href="{{ child.href }}" class="dropdown-toggle" aria-expanded="false">{{ child.name }}</a>
+														</li>
+													{% endif %}
+												{% endfor %}
+											</ul>
+										{% endfor %}
+									</div>									
+								</div>
+							{% endif %}
+						</li>
+					{% else %}
+						<li class="menulist"><a href="{{ category.href }}">{{ category.name }}</a></li>
+					{% endif %}
+				{% endfor %}
+				{% if enableBlog %}
+					<li class="blog"><a href="{{ blogs_link }}">{{ text_blog }}</a></li>
+				{% endif %}
+			</ul>
+		</div>
+	</nav>
+{% endif %}

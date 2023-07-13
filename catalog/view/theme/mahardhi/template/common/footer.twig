@@ -1,0 +1,65 @@
+<footer>
+	<div class="footer-top">
+		<div class="container">
+			{{ footer_top }}
+			<div class="row footer-middle">
+				<div class="col-sm-4">
+					<div class="footer-inner">
+						{{ footer_left }}
+					</div>
+				</div>
+				
+		      	<div class="col-sm-4">
+		      		<div class="footer-inner clearfix">
+		      			{% if informations %}
+		      			<div class="footer-inner1 col-sm-6">
+					        <h5>{{ text_information }}</h5>
+					        <ul class="list-unstyled">
+					         	{% for information in informations %}
+					          	<li><a href="{{ information.href }}">{{ information.title }}</a></li>
+					          	{% endfor %}
+					          	<li><a href="{{ account }}">{{ text_account }}</a></li>
+					          	
+					        </ul>
+				        </div>
+				        {% endif %}
+
+		      			<div class="footer-inner2 col-sm-6">
+					        <h5>{{ text_service }}</h5>
+					        <ul class="list-unstyled">
+					        	<li><a href="{{ manufacturer }}">{{ text_manufacturer }}</a></li>
+								<li><a href="{{ voucher }}">{{ text_voucher }}</a></li>
+								<li><a href="{{ affiliate }}">{{ text_affiliate }}</a></li>
+								<li><a href="{{ special }}">{{ text_special }}</a></li>
+								<li><a href="{{ sitemap }}">{{ text_sitemap }}</a></li>
+								<li><a href="{{ contact }}">{{ text_contact }}</a></li>
+					        </ul>
+					    </div>
+
+			        </div>
+		      	</div>
+
+		      	<div class="col-sm-4">
+		      		<div class="footer-inner">
+		      		{{ footer_right }}
+		      		</div>
+		      	</div>
+			</div>
+		</div>
+	</div>
+	<div class="footer_bottom clearfix">
+		<div class="container">	
+			<div class="footer-bottom-inner">
+				{{ footer_bottom }}
+				<p class="copyright">{{ powered }}</p>	
+			</div>		
+		</div>	
+	</div>
+	{% for script in scripts %}
+		<script src="{{ script }}"></script>
+	{% endfor %}
+</footer>
+<!-- top scroll -->
+	<a href="#" class="scrollToTop back-to-top" data-toggle="tooltip" title="{{ text_backtop }}"></a>
+</body>
+</html>

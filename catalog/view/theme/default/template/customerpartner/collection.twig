@@ -1,0 +1,177 @@
+<style>
+.close{
+	margin-right:1%;
+}
+</style>
+<div id="seller-collection">
+		<div class="col-sm-3">
+		</div>
+		<div class="col-sm-9">
+			<!-- <p><a href="{{ compare }}" id="compare-total" class="default-work">{{ text_compare }}</a></p> -->
+			<div class="col-md-2 col-sm-6 hidden-xs">
+             <div class="btn-group btn-group-sm">
+               <button type="button" id="list-view" class="btn btn-default" data-toggle="tooltip" title="{{ button_list }}"><i class="fa fa-th-list"></i></button>
+               <button type="button" id="grid-view" class="btn btn-default" data-toggle="tooltip" title="{{ button_grid }}"><i class="fa fa-th"></i></button>
+             </div>
+        	</div>
+
+				<div class="col-md-4 text-right">
+           <div class="form-group input-group input-group-sm">
+            <label class="input-group-addon" for="input-sort">{{ text_product_name }}</label>
+           <input type="text" name="input" value="{{ product_name is defined and product_name ? product_name : '' }}"  class="form-control col-sm-3"/>
+          </div>
+				</div>
+
+				<div class="col-md-3 col-xs-6">
+          <div class="form-group input-group input-group-sm">
+            <label class="input-group-addon" for="input-sort">{{ text_sort }}</label>
+            <select id="input-sort" class="form-control">
+              
+              
+              
+              {% for sorts in sorts %}
+              {% if sorts.value == '%s-%s'|format(sort, order) %}
+              
+              
+              
+              <option value="{{ sorts.href }}" selected="selected">{{ sorts.text }}</option>
+              
+              
+              
+              {% else %}
+              
+              
+              
+              <option value="{{ sorts.href }}">{{ sorts.text }}</option>
+              
+              
+              
+              {% endif %}
+              {% endfor %}
+            
+            
+            
+            </select>
+          </div>
+        </div>
+				 <div class="col-md-3 col-xs-6">
+          <div class="form-group input-group input-group-sm">
+            <label class="input-group-addon" for="input-limit">{{ text_limit }}</label>
+            <select id="input-limit" class="form-control">
+              
+              
+              
+              {% for limits in limits %}
+              {% if limits.value == limit %}
+              
+              
+              
+              <option value="{{ limits.href }}" selected="selected">{{ limits.text }}</option>
+              
+              
+              
+              {% else %}
+              
+              
+              
+              <option value="{{ limits.href }}">{{ limits.text }}</option>
+              
+              
+              
+              {% endif %}
+              {% endfor %}
+            
+            
+            
+            </select>
+          </div>
+        </div>
+		</div>
+	<div class="row">
+		<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+			<!-- for category list-->
+			{% if (categories) %}
+				<column id="column-left">
+					<div class="list-group">
+  {% for category in categories %}
+  {% if category.category_id == category_id %} 
+  <a href="{{ category.href }}" class="list-group-item active">{{ category.name }}</a> 
+  {% if category.children %}
+  {% for child in category.children %}
+  {% if child.category_id == child_id %}
+  <a href="{{ child.href }}" class="list-group-item active">&nbsp;&nbsp;&nbsp;- {{ child.name }}</a> 
+  {% else %} 
+  <a href="{{ child.href }}" class="list-group-item">&nbsp;&nbsp;&nbsp;- {{ child.name }}</a>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+  {% else %} <a href="{{ category.href }}" class="list-group-item">{{ category.name }}</a>
+  {% endif %}
+  {% endfor %}
+</div>
+
+				</column>
+			{% endif %}
+		</div>
+
+		<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+			{% if (products) %}
+				<div id="mp-products">
+					<div id="seller-collection">
+						<div class="row">
+							{% for product in products %}
+							<div class="product-layout product-list col-xs-12">
+							  <div class="product-thumb">
+							    <div class="image"><a href="{{ product['href'] }}" class="default-work"><img src="{{ product['thumb'] }}" alt="{{ product['name'] }}" title="{{ product['name'] }}" class="img-responsive" /></a></div>
+							    <div>
+							      <div class="caption">
+							        <h4 class="name"><a href="{{ product['href'] }}" class="default-work">{{ product['name'] }}</a></h4>
+							        <p class="description" style="height: 60px;">{{ product['description'] }}</p>
+											<div class="rating" style="height:25px;">
+								        {% if (product['rating']) %}
+								          {% set i = 1 %}{% for i in i..5 %}
+								          {% if (product['rating'] < i) %}
+								          <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-2x"></i></span>
+								          {% else %}
+								          <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
+								          {% endif %}
+								          {% endfor %}
+								        {% endif %}
+											</div>
+							        {% if (product['price']) %}
+							        <p class="price">
+							          {% if (not product['special']) %}
+							          {{ product['price'] }}
+							          {% else %}
+							          <span class="price-new">{{ product['special'] }}</span> <span class="price-old">{{ product['price'] }}</span>
+							          {% endif %}
+							          {% if (product['tax']) %}
+							          <span class="price-tax">{{ text_tax }} {{ product['tax'] }}</span>
+							          {% endif %}
+							        </p>
+							        {% endif %}
+							      </div>
+							      <div class="button-group">
+                					<button type="button" onclick="cart.add('{{ product.product_id }}', '{{ product.minimum }}');"><i class="fa fa-shopping-cart"></i> <span class="hidden-xs hidden-sm hidden-md">{{ button_cart }}</span></button>
+                					<button type="button" data-toggle="tooltip" title="{{ button_wishlist }}" onclick="wishlist.add('{{ product.product_id }}');"><i class="fa fa-heart"></i></button>
+                					<button type="button" data-toggle="tooltip" title="{{ button_compare }}" onclick="compare.add('{{ product.product_id }}');"><i class="fa fa-exchange"></i></button>
+              						</div>
+							    </div>
+							  </div>
+							</div>
+							{% endfor %}
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6 text-left">{{ pagination }}</div>
+							<div class="col-sm-6 text-right">{{ results }}</div>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+		</div>
+		{% if (not categories and not products) %}
+			<p>{{ text_empty }}</p>
+		{% endif %}
+	</div>
+</div>

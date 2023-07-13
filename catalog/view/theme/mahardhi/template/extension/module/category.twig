@@ -1,0 +1,51 @@
+<div class="category-list">
+	<div class="box-category">
+		<h3 class="toggled relative">{{ heading_title }}</h3>
+		<ul class="list-unstyled parent" id="selectMe-desk">
+			{% for category in categories %}
+				{% if category.children %}
+					{% set class = 'has-more-category' %}
+				{% else %}
+					{% set class = '' %}
+				{% endif %}
+				<li class="{{ class }}">
+					{% if category.children %}
+						<a href="{{ category.href }}" class="list-group-item main-item" >{{ category.name }}<span class="toggled"></span></a>
+					{% else %}
+						<a href="{{ category.href }}" class="list-group-item ">{{ category.name }}<span></span></a>
+					{% endif %}
+					{% if category.children %}
+						<ul class="list-unstyled child-categories group">
+							{% for child in category.children %}
+								<li >
+									{% if child.category_id == child_id %}
+										<a href="{{ child.href }}"  class="list-group-item " >{{ child.name }}</a>
+									{% else %}
+										<a href="{{ child.href }}" class="list-group-item" >{{ child.name }}</a>
+									{% endif %}
+								</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+
+<script><!--
+$(function() {
+	$(".parent .fa.fa-plus").remove();
+	$(".parent .toggled").append("<i class='fa fa-plus'></i>");
+	$('.parent .toggled').click(function(e) {
+		e.preventDefault();
+		if (!$(this).parent().hasClass('active')) {
+			$('+ ul', $('a.list-group-item.main-item')).slideUp();
+			$('a.list-group-item.main-item').removeClass('active');
+		}
+		$(this).parent().toggleClass('active');
+		$('+ ul', $(this).parent()).slideToggle('slow');
+		return false;
+	});
+});
+--></script>

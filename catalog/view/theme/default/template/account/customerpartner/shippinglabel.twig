@@ -1,0 +1,150 @@
+{% if (chkIsPartner) %} 
+<!DOCTYPE html>
+<html dir="{{ direction }}" lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ text_order }}</title>
+  <base href="{{ base }}" />
+  <script src="catalog/view/javascript/jquery/jquery-2.1.1.min.js" type="text/javascript"></script>
+  <!--<script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script> -->
+  <link href="catalog/view/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="all" />
+  <link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+  <link href="//fonts.googleapis.com/css?family=Open+Sans:400,400i,300,700" rel="stylesheet" type="text/css" />
+  <link href="catalog/view/theme/default/stylesheet/stylesheet.css" rel="stylesheet">
+</head>
+<body>
+<style>
+.table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>thead>tr>th {
+    border: 0px solid #ddd !important;
+}
+</style>
+{% if separate_view is defined and separate_view %}
+  <div class="container-fluid" id="content" style="margin-left: 18%">
+{% else %}
+  <div class="container">
+{% endif %}
+<table class="table table-bordered">
+      <thead>
+       <h1>
+         <div class="pull-right">
+          <button type="button" id="print-button" class="btn btn-primary" data-toggle="tooltip" title="{{ text_print_label }}" onclick="printLabel();" style = "float:right;"><i class="fa fa-print"></i></button>
+         </div>
+       </h1>
+    </thead>
+  </table>
+    
+ {% for product in products %}
+ <div style="page-break-after: always;">
+
+  <table class="table">
+      <tbody>
+      <tr>
+      <td>
+       <img src="{{ store_image }}" alt = "{{ text_image }}">
+         <div class="pull-right">
+              <strong>{{ order_info['store_name']}}</strong><br />
+                {{ seller_info['firstname'] }} {{ seller_info['lastname'] }}</br>
+                {{ seller_info['companyname'] }}</br>
+                {{ seller_info['address_1'] }}, {{ seller_info['city'] }}</br>
+                {{ seller_info['state'] }}</br>
+                {{ seller_info['country'] }}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <table class="table table-bordered">
+    <thead style="background-color:grey;border: 0px ">
+      <tr>
+        <th style="">
+            <b style="color:white;">{{ text_invoice_no}}
+            {% if invoice_no %}
+             {{ invoice_no}}
+            {% endif %}
+            </b> <br />
+            <b style="color:white;">{{ text_order_id}} : {{ order_id }}</b> <br />
+            <b style="color:white;">{{ "Order date : " }} {{ date_added }} </b><br />
+        </th>
+         <th style="">
+         </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="width: 50%;"><b>{{ text_billing_address}}</b></td>
+        <td style="width: 50%;"><b>{{ text_shipping_address}}</b></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td><address>
+          {{ payment_address}}
+          <br/>{{ email}}
+         </address></td>
+         <td><address>
+            {{ shipping_address}}
+          </address>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  <table class="table table-bordered">
+    <tbody>
+      <tr>
+        <td style="width: 50%;"><b>{{ text_payment_method }}</b></td>
+        <td style="width: 50%;"><b>{{ text_shipping_method}}</b></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td><address>
+          {{ payment_method}}
+          <br/>
+         </address></td>
+         <td><address>
+            {{ shipping_method}}
+            <br/>
+            <br/>
+            <br/>
+            ( <b>{{ entry_total_ship_charge }}</b> {{ shipping_applied }})
+          </address>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  
+  <table class="table table-bordered">
+      <thead>
+        <tr>
+          <td class="text-right"><b>{{ column_quantity }}</b></td>
+          <td><b>{{ column_name }}</b></td>
+          <td><b>{{ column_model}}</b></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+         <td class="text-right">{{ product['quantity']}}</td>
+          <td>{{ product['name']}}
+            {% for option in product['option'] %}
+            <br />
+            &nbsp;<small> - {{ option['name']}}: {{ option['value']}}</small>
+            {% endfor %}
+          </td>
+          <td>{{ product['model']}}</td>
+        </tr>
+       
+      </tbody>
+    </table>
+  </div>
+   {% endfor %}  
+</div>
+</body>
+</html>
+<script>
+
+function printLabel(){
+  window.print();
+}
+</script>
+{% endif %} 

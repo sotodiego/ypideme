@@ -1,0 +1,6 @@
+span[data-toggle="tooltip"] {
+    color: #1e91cf;
+    content: "";
+    font-family: FontAwesome;
+    margin-left: 4px;
+}

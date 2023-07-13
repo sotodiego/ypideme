@@ -1,0 +1,124 @@
+/*---------------CountDown css--------------*/
+.special-countdown .thumb-description{
+    text-align: left;
+}
+.pro-image {
+    position: relative;
+}
+.countdown-labele,
+span.percent{
+    position: absolute;
+    top: 0;
+}
+span.percent{
+    top: 10px;
+    display: inline-flex;
+}
+.item-countdown{
+    position: relative;
+}
+.item-countdown div{
+    color: #111111;
+    display: inline-block;
+    margin: 10px;
+    text-align: center;
+}
+.item-countdown div > b {
+    font: 500 16px/20px "Poppins",Helvetica,sans-serif;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    display: block;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -khtml-border-radius: 50%;
+    background: #f9f9f9;
+}
+.item-countdown div:last-child {
+    color: #f13340;
+}
+.item-countdown div > span{
+    color: #666666;
+    font-size: 13px;
+    font-weight: 400;
+    text-align: center;
+}
+.qtyprogress {
+    color: #000;
+    font-size: 13px;
+    line-height: normal;
+    text-align: left;
+    width: 100%;
+    margin: 0 0 15px;
+    position: relative;
+    z-index: 999;
+}
+.qtyprogress #QuantityAvailable {
+    color: #777777;
+}
+.qtyprogress #quantity {
+    font-weight: 600;
+}
+.progress{
+    background: #e5e5e5;
+    border-radius: 25px;
+    -moz-border-radius: 25px; 
+    -webkit-border-radius: 25px; 
+    -khtml-border-radius: 25px;
+    float: left;
+    height: 10px;
+    margin: 5px 0 0;
+    width: 100%;
+}
+.progress-bar {
+    background-color: #62ac01;
+    border-radius: 25px;
+    -moz-border-radius: 25px; 
+    -webkit-border-radius: 25px; 
+    -khtml-border-radius: 25px;
+    height: 10px;
+    width: 0;
+}
+
+/*---------------column-right-left css--------------*/
+.special-countdown .product-thumb {
+  padding: 10px 0;
+}
+#column-left .countdown-images,
+#column-right .countdown-images {
+  width: 100%;
+}
+#column-left .countdown-images .specialcount-images-container,
+#column-right .countdown-images .specialcount-images-container {
+  display: none;
+}
+#column-left .special-countdown .product-thumb .thumb-description,
+#column-right .special-countdown .product-thumb .thumb-description {
+  float: left;
+  width: 100%;
+}
+#column-left .btn-wishlist,#column-left .btn-compare,
+#column-left .quickview-btn,#column-left .qtyprogress,
+#column-right .btn-wishlist,#column-right .btn-compare,
+#column-right .quickview-btn,#column-right .qtyprogress{
+    display: none;
+}
+#column-left .pro-image,
+#column-right .pro-image{
+    text-align: center;
+}
+@media (max-width: 991px) {
+    #column-left .countdown-images, #column-right .countdown-images,
+    #column-left .special-countdown .product-thumb .thumb-description,
+    #column-right .special-countdown .product-thumb .thumb-description{
+        text-align: center;
+    }
+}
+@media (max-width: 540px) {
+    .special-countdown .countdown-images,
+    .special-countdown .thumb-description{
+        width: 100%;
+    }
+}
+/*---------------column-right-left css--------------*/

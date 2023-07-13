@@ -1,0 +1,964 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if (error_warning) %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if (success) %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+      </div>
+      {% if (marketplace_status is defined and marketplace_status) %}
+      <div class="panel-body">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab-cpanel" data-toggle="tab"><i class="fa fa-power-off"></i> {{ tab_cpanel }}</a></li>
+          <li class="dropdown"><a href="" data-toggle="dropdown" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cogs"></i> {{ tab_setting }} <span class="caret"></span></a>
+            <ul class="dropdown-menu dropdown-menu-left">
+              <li><a href="#tab-setting-widget" data-toggle="tab">{{ text_widgets }}</a></li>
+              <li><a href="#tab-setting-listing" data-toggle="tab">{{ text_listing }}</a></li>
+            </ul>
+          </li>
+          <li><a href="#tab-stats" data-toggle="tab" id="stats-load"><i class="fa fa-bar-chart"></i> {{ tab_stats }}</a></li>
+
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="tab-cpanel">
+            <form action="{{ action_control }}" method="post" enctype="multipart/form-data" id="form-cpanel" class="form-horizontal">
+              <div class="pull-right">
+                <button type="submit" form="form-cpanel" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+              </div>
+              <br>
+              <fieldset>
+                <legend>{{ text_crosssell }}</legend>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-crosssell-status"><span data-toggle="tooltip" data-original-title="{{ help_crosssell_status }}">{{ entry_crosssell_status }}</span></label>
+                  <div class="col-sm-10">
+                    <select name="module_wk_crosssell_crosssell_status" id="input-crosssell-status" class="form-control">
+                      {% if (wk_crosssell_crosssell_status) %}
+                      <option value="1" selected="selected">{{ text_enabled }}</option>
+                      <option value="0">{{ text_disabled }}</option>
+                      {% else %}
+                      <option value="1">{{ text_enabled }}</option>
+                      <option value="0" selected="selected">{{ text_disabled }}</option>
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-crosssell-applicable"><span data-toggle="tooltip" title="{{ help_crosssell_applicable }}">{{ entry_crosssell_applicable }}</span></label>
+                  <div class="col-sm-10">
+                    <select name="wk_crosssell_crosssell_applicable_status" id="incrosssell-applicable-status" class="form-control">
+                      {% if (wk_crosssell_crosssell_applicable_status) %}
+                      <option value="1" selected="selected">{{ text_except }}</option>
+                      <option value="0">{{ text_noone }}</option>
+                      {% else %}
+                      <option value="1">{{ text_except }}</option>
+                      <option value="0" selected="selected">{{ text_noone }}</option>
+                      {% endif %}
+                    </select>
+                  </div>
+                  <div class="col-sm-10 col-sm-offset-2">
+                    <input type="text" name="wk_crosssell_crosssell_applicable" value="" placeholder="{{ entry_crosssell_applicable }}" id="input-crosssell-applicable" class="form-control" />
+                    <div id="vendor-crosssell-applicable" class="well well-sm" style="height: 150px; overflow: auto;">
+                      {% set class = 'odd' %}
+                      {% for vendor_crosssell_applicable in vendor_crosssell_applicables %}
+                      {% set class = class == 'even' ? 'odd' : 'even' %}
+                      <div id="vendor-crosssell-applicable{{ vendor_crosssell_applicable['vendor_id'] }}" class="{{ class }}"><i class="fa fa-minus-circle"></i> {{ vendor_crosssell_applicable['name'] }}
+                        <input type="hidden" name="wk_crosssell_vendor_crosssell_applicable[]" value="{{ vendor_crosssell_applicable['vendor_id'] }}" />
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>{{ text_tax }}</legend>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-tax-status"><span data-toggle="tooltip" data-original-title="{{ help_tax_status }}">{{ entry_tax_status }}</span></label>
+                  <div class="col-sm-10">
+                    <select name="wk_crosssell_tax_status" id="input-tax-status" class="form-control">
+                      {% if (wk_crosssell_tax_status) %}
+                      <option value="1" selected="selected">{{ text_enabled }}</option>
+                      <option value="0">{{ text_disabled }}</option>
+                      {% else %}
+                      <option value="1">{{ text_enabled }}</option>
+                      <option value="0" selected="selected">{{ text_disabled }}</option>
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>{{ text_countdown }}</legend>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-countdown-status"><span data-toggle="tooltip" data-original-title="{{ help_countdown_status }}">{{ entry_countdown_status }}</span></label>
+                  <div class="col-sm-10">
+                    <select name="wk_crosssell_countdown_status" id="input-countdown-status" class="form-control">
+                      {% if (wk_crosssell_countdown_status) %}
+                      <option value="1" selected="selected">{{ text_enabled }}</option>
+                      <option value="0">{{ text_disabled }}</option>
+                      {% else %}
+                      <option value="1">{{ text_enabled }}</option>
+                      <option value="0" selected="selected">{{ text_disabled }}</option>
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-countdown-applicable"><span data-toggle="tooltip" title="{{ help_countdown_applicable }}">{{ entry_countdown_applicable }}</span></label>
+                  <div class="col-sm-10">
+                    <select name="wk_crosssell_countdown_applicable_status" id="input-countdown-applicable-status" class="form-control">
+                      {% if (wk_crosssell_countdown_applicable_status) %}
+                      <option value="1" selected="selected">{{ text_except }}</option>
+                      <option value="0">{{ text_noone }}</option>
+                      {% else %}
+                      <option value="1">{{ text_except }}</option>
+                      <option value="0" selected="selected">{{ text_noone }}</option>
+                      {% endif %}
+                    </select>
+                  </div>
+                  <div class="col-sm-10 col-sm-offset-2">
+                    <input type="text" name="wk_crosssell_countdown_applicable" value="" placeholder="{{ entry_countdown_applicable }}" id="input-countdown-applicable" class="form-control" />
+                    <div id="vendor-countdown-applicable" class="well well-sm" style="height: 150px; overflow: auto;">
+                      {% set class = 'odd' %}
+                      {% for vendor_countdown_applicable in vendor_countdown_applicables %}
+                      {% set class = class == 'even' ? 'odd' : 'even' %}
+                      <div id="vendor-countdown-applicable{{ vendor_countdown_applicable['vendor_id'] }}" class="{{ class }}"><i class="fa fa-minus-circle"></i> {{ vendor_countdown_applicable['name'] }}
+                        <input type="hidden" name="wk_crosssell_vendor_countdown_applicable[]" value="{{ vendor_countdown_applicable['vendor_id'] }}" />
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group ">
+                  <label class="col-sm-2 control-label" for="input-countdown-syntax"><span data-toggle="tooltip" title="{{ help_countdown_syntax }}">{{ entry_countdown_syntax }}</span></label>
+                  <div class="col-sm-10">
+                    <div class="tab-pane" id="tab-countdown">
+                      <ul class="nav nav-tabs" id="countdown">
+                        {% for language in languages %}
+                        <li><a href="#tab-countdown-language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" title="{{ language['name'] }}" /> {{ language['name'] }}</a></li>
+                        {% endfor %}
+                      </ul>
+                      <div class="tab-content">
+                        {% for language in languages %}
+                        <div class="tab-pane" id="tab-countdown-language{{ language['language_id'] }}">
+                          <div class="form-group">
+                            <textarea name="wk_crosssell_countdown_syntax[{{ language['language_id'] }}]" placeholder="{{ entry_countdown_syntax }}" class="form-control summernote" rows="3">{{ wk_crosssell_countdown_syntax[language['language_id']] is defined ? wk_crosssell_countdown_syntax[language['language_id']] : '' }}</textarea>
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group ">
+                  <label class="col-sm-2 control-label" for="input-countdowntime-syntax"><span data-toggle="tooltip" title="{{ help_countdowntime_syntax }}">{{ entry_countdowntime_syntax }}</span></label>
+                  <div class="col-sm-10">
+                    <div class="tab-pane" id="tab-countdowntime">
+                      <ul class="nav nav-tabs" id="countdowntime">
+                        {% for language in languages %}
+                        <li><a href="#tab-countdowntime-language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" title="{{ language['name'] }}" /> {{ language['name'] }}</a></li>
+                        {% endfor %}
+                      </ul>
+                      <div class="tab-content">
+                        {% for language in languages %}
+                        <div class="tab-pane" id="tab-countdowntime-language{{ language['language_id'] }}">
+                          <div class="form-group">
+                            <textarea name="wk_crosssell_countdowntime_syntax[{{ language['language_id'] }}]" placeholder="{{ entry_countdowntime_syntax }}" class="form-control summernote" rows="3">{{ wk_crosssell_countdowntime_syntax[language['language_id']] is defined ? wk_crosssell_countdowntime_syntax[language['language_id']] : '' }}</textarea>
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>{{ text_units }}</legend>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-units-status"><span data-toggle="tooltip" data-original-title="{{ help_units_status }}">{{ entry_units_status }}</span></label>
+                  <div class="col-sm-10">
+                    <select name="wk_crosssell_units_status" id="input-units-status" class="form-control">
+                      {% if (wk_crosssell_units_status) %}
+                      <option value="1" selected="selected">{{ text_enabled }}</option>
+                      <option value="0">{{ text_disabled }}</option>
+                      {% else %}
+                      <option value="1">{{ text_enabled }}</option>
+                      <option value="0" selected="selected">{{ text_disabled }}</option>
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-units-applicable"><span data-toggle="tooltip" title="{{ help_units_applicable }}">{{ entry_units_applicable }}</span></label>
+                  <div class="col-sm-10">
+                    <select name="wk_crosssell_units_applicable_status" id="inunits-applicable-status" class="form-control">
+                      {% if (wk_crosssell_units_applicable_status) %}
+                      <option value="1" selected="selected">{{ text_except }}</option>
+                      <option value="0">{{ text_noone }}</option>
+                      {% else %}
+                      <option value="1">{{ text_except }}</option>
+                      <option value="0" selected="selected">{{ text_noone }}</option>
+                      {% endif %}
+                    </select>
+                  </div>
+                  <div class="col-sm-10 col-sm-offset-2">
+                    <input type="text" name="wk_crosssell_units_applicable" value="" placeholder="{{ entry_units_applicable }}" id="input-units-applicable" class="form-control" />
+                    <div id="vendor-units-applicable" class="well well-sm" style="height: 150px; overflow: auto;">
+                      {% set class = 'odd' %}
+                      {% for vendor_units_applicable in vendor_units_applicables %}
+                      {% set class = class == 'even' ? 'odd' : 'even' %}
+                      <div id="vendor-units-applicable{{ vendor_units_applicable['vendor_id'] }}" class="{{ class }}"><i class="fa fa-minus-circle"></i> {{ vendor_units_applicable['name'] }}
+                        <input type="hidden" name="wk_crosssell_vendor_units_applicable[]" value="{{ vendor_units_applicable['vendor_id'] }}" />
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group ">
+                  <label class="col-sm-2 control-label" for="input-units-syntax"><span data-toggle="tooltip" title="{{ help_units_syntax }}">{{ entry_units_syntax }}</span></label>
+                  <div class="col-sm-10">
+                    <div class="tab-pane" id="tab-units">
+                      <ul class="nav nav-tabs" id="units">
+                        {% for language in languages %}
+                        <li><a href="#tab-units-language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" title="{{ language['name'] }}" /> {{ language['name'] }}</a></li>
+                        {% endfor %}
+                      </ul>
+                      <div class="tab-content">
+                        {% for language in languages %}
+                        <div class="tab-pane" id="tab-units-language{{ language['language_id'] }}">
+                          <div class="form-group">
+                            <textarea name="wk_crosssell_units_syntax[{{ language['language_id'] }}]" placeholder="{{ entry_units_syntax }}" class="form-control summernote" rows="3">{{ wk_crosssell_units_syntax[language['language_id']] is defined ? wk_crosssell_units_syntax[language['language_id']] : '' }}</textarea>
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+          <div class="tab-pane" id="tab-setting-widget">
+            <form action="{{ action_widgets }}" method="post" enctype="multipart/form-data" id="form-widgets" class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-title-widget"><span data-toggle="tooltip" data-original-title="{{ help_title }}">{{ entry_title }}</span></label>
+                <div class="col-sm-10">
+                  {% for language in languages %}
+                    <div class="input-group" style="margin-bottom:2px;"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" title="{{ language['name'] }}" /> {{ language['name'] }}</span>
+                      <input type="text" name="wk_cwidget_title[{{ language['language_id'] }}]" placeholder="{{ entry_title }}" class="form-control" value="{{ wk_cwidget_title[language['language_id']] is defined ? wk_cwidget_title[language['language_id']] : '' }}" />
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-widget-status"><span data-toggle="tooltip" data-original-title="{{ help_widget_status }}">{{ entry_widget_status }}</span></label>
+                <div class="col-sm-10">
+                  <select name="wk_cwidget_status" id="input-widget-status" class="form-control">
+                    {% if (wk_cwidget_status) %}
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %}
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-crossselling-widget"><span data-toggle="tooltip" data-original-title="{{ help_crossselling_widget }}">{{ entry_crossselling_widget }}</span></label>
+                <div class="col-sm-10">
+                  <input type="number" min="0" name="wk_cwidget_crossselling_widget" value="{{ wk_cwidget_crossselling_widget }}" placeholder="{{ entry_crossselling_widget }}" id="input-crossselling-widget" class="form-control int_number" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-display-type"><span data-toggle="tooltip" data-original-title="{{ help_display_type }}">{{ entry_display_type }}</span></label>
+                <div class="col-sm-10">
+                  <select name="wk_cwidget_display_type" id="input-display-type" class="form-control">
+                    {% if (wk_cwidget_display_type) %}
+                    <option value="0">{{ text_random }}</option>
+                    <option value="1" selected="selected">{{ text_default }}</option>
+                    {% else %}
+                    <option value="0" selected="selected">{{ text_random }}</option>
+                    <option value="1">{{ text_default }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-picture-size"><span data-toggle="tooltip" data-original-title="{{ help_picture_size }}">{{ entry_picture_size }}</span></label>
+                <div class="col-sm-10">
+                  <div class="input-group">
+                    <span class="input-group-addon">{{ text_width }}</span>
+                    <input type="number" min="0" name="wk_cwidget_picture_width" value="{{ wk_cwidget_picture_width }}" placeholder="{{ entry_picture_width }}" id="input-picture-size" class="form-control int_number" />
+                    <span class="input-group-addon">{{ text_px }}</span>
+                  </div>
+                </div>
+                <div class="col-sm-10 col-sm-offset-2">
+                  <div class="input-group">
+                    <span class="input-group-addon">{{ text_height }}</span>
+                    <input type="number" min="0" name="wk_cwidget_picture_height" value="{{ wk_cwidget_picture_height }}" placeholder="{{ entry_picture_height }}" id="input-picture-size" class="form-control int_number" />
+                    <span class="input-group-addon">{{ text_px }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group ">
+                <label class="col-sm-2 control-label" for="input-crossselling-details"><span data-toggle="tooltip" title="{{ help_crossselling_details }}">{{ entry_crossselling_details }}</span></label>
+                <div class="col-sm-10">
+                  <div class="tab-pane" id="tab-widgets">
+                    <ul class="nav nav-tabs" id="widget-details">
+                      {% for language in languages %}
+                      <li><a href="#tab-widgets-language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" title="{{ language['name'] }}" /> {{ language['name'] }}</a></li>
+                      {% endfor %}
+                    </ul>
+                    <div class="tab-content">
+                      {% for language in languages %}
+                      <div class="tab-pane" id="tab-widgets-language{{ language['language_id'] }}">
+                        <div class="form-group">
+                          <textarea name="wk_cwidget_crossselling_details[{{ language['language_id'] }}]" placeholder="{{ entry_crossselling_details }}" class="form-control summernote" rows="3">{{ wk_cwidget_crossselling_details[language['language_id']] is defined ? wk_cwidget_crossselling_details[language['language_id']] : '' }}</textarea>
+                        </div>
+                        <!-- <div class="form-group">
+                          <textarea name="wk_cwidget_crossselling_details2[{{ language['language_id'] }}]" placeholder="{{ entry_crossselling_details }}" class="form-control summernote" rows="3">{{ wk_cwidget_crossselling_details2[language['language_id']] is defined ? wk_cwidget_crossselling_details2[language['language_id']] : '' }}</textarea>
+                        </div> -->
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pull-right">
+                <button type="submit" form="form-widgets" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+              </div>
+            </form>
+          </div>
+          <div class="tab-pane" id="tab-setting-listing">
+            <form action="{{ action_listings }}" method="post" enctype="multipart/form-data" id="form-listings" class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label"><span data-toggle="tooltip" data-original-title="{{ help_listing_url }}">{{ entry_listing_url }}</span></label>
+                <div class="col-sm-10">
+                  <a href="{{ catalog_link }}" target="_blank">{{ text_listing }}</a>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-listing-status"><span data-toggle="tooltip" data-original-title="{{ help_listing_status }}">{{ entry_listing_status }}</span></label>
+                <div class="col-sm-10">
+                  <select name="wk_clisting_status" id="input-listing-status" class="form-control">
+                    {% if (wk_clisting_status) %}
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %}
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-title-menulink"><span data-toggle="tooltip" data-original-title="{{ help_title_menulink }}">{{ entry_title_menulink }}</span></label>
+                <div class="col-sm-10">
+                  {% for language in languages %}
+                    <div class="input-group" style="margin-bottom:2px;"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" title="{{ language['name'] }}" /> {{ language['name'] }}</span>
+                      <input type="text" name="wk_clisting_menulink_title[{{ language['language_id'] }}]" placeholder="{{ entry_title_menulink }}" class="form-control" value="{{ wk_clisting_menulink_title[language['language_id']] is defined ? wk_clisting_menulink_title[language['language_id']] : '' }}" />
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-sort-menu"><span data-toggle="tooltip" data-original-title="{{ help_sort_menu }}">{{ entry_sort_menu }}</span></label>
+                <div class="col-sm-10">
+                  <input type="number"  min="0" name="wk_clisting_sort_menu" value="{{ wk_clisting_sort_menu }}" placeholder="{{ entry_sort_menu }}" id="input-sort-menu" class="form-control int_number" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-bundles-page"><span data-toggle="tooltip" data-original-title="{{ help_bundles_page }}">{{ entry_bundles_page }}</span></label>
+                <div class="col-sm-10">
+                  <input type="number"  min="0" name="wk_clisting_bundles_page" value="{{ wk_clisting_bundles_page }}" placeholder="{{ entry_bundles_page }}" id="input-bundles-page" class="form-control int_number" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-picture-size"><span data-toggle="tooltip" data-original-title="{{ help_picture_size }}">{{ entry_picture_size }}</span></label>
+                <div class="col-sm-10">
+                  <div class="input-group">
+                    <span class="input-group-addon">{{ text_width }}</span>
+                    <input type="number" min="0" name="wk_clisting_picture_width" value="{{ wk_clisting_picture_width }}" placeholder="{{ entry_picture_width }}" id="input-picture-size" class="form-control int_number" />
+                    <span class="input-group-addon">{{ text_px }}</span>
+                  </div>
+                </div>
+                <div class="col-sm-10 col-sm-offset-2">
+                  <div class="input-group">
+                    <span class="input-group-addon">{{ text_height }}</span>
+                    <input type="number" min="0" name="wk_clisting_picture_height" value="{{ wk_clisting_picture_height }}" placeholder="{{ entry_picture_height }}" id="input-picture-size" class="form-control int_number" />
+                    <span class="input-group-addon">{{ text_px }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-theme">{{ entry_theme }}</label>
+                <div class="col-sm-10">
+                  <select name="wk_clisting_theme" class="form-control" id="input-theme">
+                    <option {% if (wk_clisting_theme == "ps_gray") %} {{ " selected" }}{% endif %} value="ps_gray">{{ text_gray }}</option>
+                    <option {% if (wk_clisting_theme == "ps_blue") %} {{ " selected" }}{% endif %} value="ps_blue">{{ text_blue }}</option>
+                    <option {% if (wk_clisting_theme == "ps_green") %} {{ " selected" }}{% endif %} value="ps_green">{{ text_green }}</option>
+                    <option {% if (wk_clisting_theme == "ps_orange") %} {{ " selected" }}{% endif %} value="ps_orange">{{ text_orange }}</option>
+                    <option {% if (wk_clisting_theme == "ps_red") %} {{ " selected" }}{% endif %} value="ps_red">{{ text_red }}</option>
+                    <option {% if (wk_clisting_theme == "ps_purple") %} {{ " selected" }}{% endif %} value="ps_purple">{{ text_purple }}</option>
+                    <option {% if (wk_clisting_theme == "ps_yellow") %} {{ " selected" }}{% endif %} value="ps_yellow">{{ text_yellow }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group ">
+                <label class="col-sm-2 control-label" for="input-crossselling-details"><span data-toggle="tooltip" title="{{ help_crossselling_details }}">{{ entry_crossselling_details }}</span></label>
+                <div class="col-sm-10">
+                  <div class="tab-pane" id="tab-listings">
+                    <ul class="nav nav-tabs" id="listing-details">
+                      {% for language in languages %}
+                      <li><a href="#tab-listings-language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" title="{{ language['name'] }}" /> {{ language['name'] }}</a></li>
+                      {% endfor %}
+                    </ul>
+                    <div class="tab-content">
+                      {% for language in languages %}
+                      <div class="tab-pane" id="tab-listings-language{{ language['language_id'] }}">
+                        <div class="form-group">
+                          <textarea name="wk_clisting_crossselling_details[{{ language['language_id'] }}]" placeholder="{{ entry_crossselling_details }}" class="form-control summernote" rows="3">{{ wk_clisting_crossselling_details[language['language_id']] is defined ? wk_clisting_crossselling_details[language['language_id']] : '' }}</textarea>
+                        </div>
+                        <!-- <div class="form-group">
+                          <textarea name="wk_clisting_crossselling_details2[{{ language['language_id'] }}]" placeholder="{{ entry_crossselling_details }}" class="form-control summernote" rows="3">{{ wk_clisting_crossselling_details2[language['language_id']] is defined ? wk_clisting_crossselling_details2[language['language_id']] : '' }}</textarea>
+                        </div> -->
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pull-right">
+                <button type="submit" form="form-listings" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+              </div>
+            </form>
+          </div>
+          <div class="tab-pane" id="tab-stats">
+            <h3>{{ tab_stats }}</h3>
+            <div class="container-fluid">
+              <div class="row well">
+                <form action="{{ export }}" id="form-export" method="post">
+
+                  <div class="form-group col-sm-5">
+                    <label class="col-sm-12 control-label" for="input-datef"><span data-toggle="tooltip" title="{{ help_valid_from }}">{{ entry_date_from }}</span></label>
+                    <div class="col-sm-12">
+                      <div class="input-group datetime">
+                        <input type="text" name="date_from" value="" data-date-format="YYYY-MM-DD" placeholder="{{ entry_date_from }}" id="input-datef" class="form-control" data-date-format="YYYY-MM-DD"/>
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group col-sm-5">
+                    <label class="col-sm-12 control-label" for="input-datet"><span data-toggle="tooltip" title="{{ help_valid_till }}">{{ entry_date_till }}</span></label>
+                    <div class="col-sm-12">
+                      <div class="input-group datetime">
+                        <input type="text" name="date_till" value="" data-date-format="YYYY-MM-DD" placeholder="{{ entry_date_till }}" id="input-datet" class="form-control" />
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pull-right">
+                    <a onclick="$('#form-export').submit();" data-toggle="tooltip" title="{{ text_export }}" class="btn btn-warning btn-lg"><i class="fa fa-download"></i> {{ text_export }}</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <br>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="btn-danger">
+                  <tr>
+                    <td>{{ column_vendor_id }}</td>
+                    <td>{{ column_vendor }}</td>
+                    <td>{{ column_store_id }}</td>
+                    <td>{{ column_parent_product }}</td>
+                    <td>{{ column_child_product }}</td>
+                    <td>{{ column_added_on }}</td>
+                    <td>{{ column_start_date }}</td>
+                    <td>{{ column_end_date }}</td>
+                    <td>{{ column_condition }}</td>
+                    <td>{{ column_action }}</td>
+                    <td>{{ column_countdown }}</td>
+                    <td>{{ column_units }}</td>
+                  </tr>
+                </thead>
+                <tbody class="stats-body"></tbody>
+                <tfoot class="text-center">
+                  <tr><td colspan="12" class="text-center alert-info"><span class="stats-result"></span> <i id="wkfoot" class="fa fa-spin" style="font-size: large;"></i></td></tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="tab-pane" id="tab-manage">
+            <fieldset>
+              <legend>{{ tab_manage }}</legend>
+              <form action="{{ action_deploy }}" method="post" enctype="multipart/form-data" id="form-deploy" class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label"><span data-toggle="tooltip" title="{{ help_deployment }}">{{ entry_deployment }}</span></label>
+                <div class="col-sm-10">
+                  <label class="radio">
+                    <input type="radio" name="wk_cdeploy" class="wk_cdeploy" value="1" {% if (wk_cdeploy == '1') %} {{ "checked" }}{% endif %}/>
+                    {{ text_offer_product }}
+                  </label>
+                  <label class="radio">
+                    <input type="radio" name="wk_cdeploy" class="wk_cdeploy" value="2" {% if (wk_cdeploy == '2') %} {{ "checked" }}{% endif %} />
+                    {{ text_offer_category }}
+                  </label>
+                  <label class="radio">
+                    <input type="radio" name="wk_cdeploy" class="wk_cdeploy" value="3" {% if (wk_cdeploy == '3') %} {{ "checked" }}{% endif %} />
+                    {{ text_offer_neither }}
+                  </label>
+                  <label class="radio">
+                    <input type="radio" name="wk_cdeploy" id="wk_cdeploy4" value="4" {% if (wk_cdeploy == '4') %} {{ "checked" }}{% endif %} />
+                    {{ text_offer_list }}
+                    <div id="wk_cdeploy" style="display:none;">
+                      <label class="radio">
+                        <input type="radio" name="wk_cdeploy_origin" value="1" {% if (wk_cdeploy_origin == '1') %} {{ "checked" }}{% endif %} />
+                        {{ text_origin_product }}
+                        <button class="btn btn-success" data-keyboard="true" class="origin-product" data-toggle="modal" data-target="#oriproModal" onclick="return false;">{{ text_show }}</button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="oriproModal" role="dialog" tabindex='-1'>
+                          <div class="modal-dialog modal-md">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <p class="modal-title" id="wkmodalheader">Products</p>
+                              </div>
+                              <div class="modal-body" id="wkmodalbody">
+                                {% for product in product_data %}
+                                  <div class="">
+                                    <input type="checkbox" value="{{ product['product_id'] }}" name="wk_cdeploy_origin_product[]" id="oproduct{{ product['product_id'] }}"{% if product['product_id'] in wk_cdeploy_origin_product %} {{ "checked" }} {% endif %}><label for="oproduct{{ product['product_id'] }}">{{ product['name'] }}</label>
+                                  </div>
+                                {% endfor %}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                      <label class="radio">
+                        <input type="radio" name="wk_cdeploy_origin" value="2" {% if (wk_cdeploy_origin == '2') %} {{ "checked" }}{% endif %} />
+                        {{ text_origin_category }}
+                        <button class="btn btn-success" data-keyboard="true" class="origin-category" data-toggle="modal" data-target="#oricatModal" onclick="return false;">{{ text_show }}</button>
+                        <div class="modal fade" id="oricatModal" role="dialog" tabindex='-1'>
+                          <div class="modal-dialog modal-md">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <p class="modal-title" id="wkmodalheader">Categories</p>
+                              </div>
+                              <div class="modal-body" id="wkmodalbody">
+                                {% for cat in category %}
+                                  <div class="">
+                                    <input type="checkbox" value="{{ cat['category_id'] }}" name="wk_cdeploy_origin_category[]" id="ocat{{ cat['category_id'] }}"{% if cat['category_id'] in wk_cdeploy_origin_category %}{{ "checked" }} {% endif %}><label for="ocat{{ cat['category_id'] }}">{{ cat['name'] }}</label> <button class="btn btn-default btn-xs wk_ori_cat" onclick="return false;"><i class="fa fa-plus"></i></button>
+                                      <div class="form-group">
+                                      {% for sub in category_data[cat['category_id']] %}
+                                      <div class="">
+                                        <input type="checkbox" value="{{ sub['category_id'] }}" name="wk_cdeploy_origin_subcategory[]" id="osub{{ sub['category_id'] }}"{% if sub['category_id'] in wk_cdeploy_origin_subcategory %}{{ "checked" }} {% endif %}><label for="osub{{ sub['category_id'] }}">{{ sub['name'] }}</label>
+                                      </div>
+                                      {% endfor %}
+                                      </div>
+                                  </div>
+                                {% endfor %}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                      <label class="radio">
+                        <input type="radio" name="wk_cdeploy_destiny" value="1" {% if (wk_cdeploy_destiny == '1') %} {{ "checked" }}{% endif %} />
+                        {{ text_destiny_product }}
+                        <button class="btn btn-success" data-keyboard="true" class="destiny-product" data-toggle="modal" data-target="#destproModal" onclick="return false;">{{ text_show }}</button>
+                        <div class="modal fade" id="destproModal" role="dialog" tabindex='-1'>
+                          <div class="modal-dialog modal-md">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <p class="modal-title" id="wkmodalheader">Products</p>
+                              </div>
+                              <div class="modal-body" id="wkmodalbody">
+                                {% for product in product_data %}
+                                  <div class="">
+                                    <input type="checkbox" value="{{ product['product_id'] }}" name="wk_cdeploy_destiny_product[]" id="dproduct{{ product['product_id'] }}"{% if product['product_id'] in wk_cdeploy_destiny_product %} {{ "checked" }} {% endif %}><label for="dproduct{{ product['product_id'] }}">{{ product['name'] }}</label>
+                                  </div>
+                                {% endfor %}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                      <label class="radio">
+                        <input type="radio" name="wk_cdeploy_destiny" value="2" {% if (wk_cdeploy_destiny == '2') %} {{ "checked" }}{% endif %} />
+                        {{ text_destiny_category }}
+                        <button class="btn btn-success" data-keyboard="true" class="destiny-category" data-toggle="modal" data-target="#destcatModal" onclick="return false;">{{ text_show }}</button>
+                        <div class="modal fade" id="destcatModal" role="dialog" tabindex='-1'>
+                          <div class="modal-dialog modal-md">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <p class="modal-title" id="wkmodalheader">Categories</p>
+                              </div>
+                              <div class="modal-body" id="wkmodalbody">
+                                {% for cat in category %}
+                                  <div class="">
+                                    <input type="checkbox" value="{{ cat['category_id'] }}" name="wk_cdeploy_destiny_category[]" id="dcat{{ cat['category_id'] }}" {% if cat['category_id'] in wk_cdeploy_destiny_category %}{{ "checked" }} {% endif %}><label for="dcat{{ cat['category_id'] }}">{{ cat['name'] }}</label> <button class="btn btn-default btn-xs wk_ori_cat" onclick="return false;"><i class="fa fa-plus"></i></button>
+                                      <div class="form-group">
+                                      {% for sub in category_data[cat['category_id']] %}
+                                      <div class="">
+                                        <input type="checkbox" value="{{ sub['category_id'] }}" name="wk_cdeploy_destiny_subcategory[]" id="dsub{{ sub['category_id'] }}"{% if sub['category_id'] in wk_cdeploy_destiny_subcategory %} {{ "checked" }} {% endif %}><label for="dsub{{ sub['category_id'] }}">{{ sub['name'] }}</label>
+                                      </div>
+                                      {% endfor %}
+                                      </div>
+                                  </div>
+                                {% endfor %}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="pull-right">
+                <button type="submit" form="form-deploy" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+              </div>
+            </form>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+     {% else %}
+      <div class="alert">
+          {{ error_marketplace_disable }}
+      </div>
+     {% endif %}
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="view/javascript/summernote/summernote.js"></script>
+<link href="view/javascript/summernote/summernote.css" rel="stylesheet" />
+<script type="text/javascript" src="view/javascript/summernote/opencart.js"></script>
+<script type="text/javascript">
+
+$('.summernote').summernote({height: 150});
+
+$('.datetime').datetimepicker({
+  pickDate: true,
+  pickTime: true
+});
+
+$('.wk_ori_cat').on('click', function () {
+  if ($(this).children().hasClass('fa-plus')) {
+    $(this).children().removeClass('fa-plus');
+    $(this).children().addClass('fa-minus');
+    $(this).next().slideDown();
+  } else {
+    $(this).children().removeClass('fa-minus');
+    $(this).children().addClass('fa-plus');
+    $(this).next().slideUp();
+  };
+});
+
+$('input[name=\'wk_crosssell_crosssell_applicable\']').click(function(){
+  $(this).autocomplete("search");
+});
+// crosssell_applicable
+$('input[name=\'wk_crosssell_crosssell_applicable\']').autocomplete({
+  minLength: 0,
+  delay: 101,
+  source: function(request, response) {
+    $.ajax({
+      url: 'index.php?route=extension/module/wk_crosssell/vendor&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['vendor_id']
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $('input[name=\'wk_crosssell_crosssell_applicable\']').val('');
+    $('#vendor-crosssell-applicable' + item['value']).remove();
+
+    $('#vendor-crosssell-applicable').append('<div id="vendor-crosssell-applicable' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="wk_crosssell_vendor_crosssell_applicable[]" value="' + item['value'] + '" /></div>');
+
+    $('#vendor-crosssell-applicable div:odd').attr('class', 'odd');
+    $('#vendor-crosssell-applicable div:even').attr('class', 'even');
+
+    return false;
+  },
+  focus: function(item) {
+      return false;
+   }
+});
+
+$('#vendor-crosssell-applicable').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+  $('#vendor-crosssell-applicable div:odd').attr('class', 'odd');
+  $('#vendor-crosssell-applicable div:even').attr('class', 'even');
+});
+
+$('input[name=\'wk_crosssell_countdown_applicable\']').click(function(){
+  $(this).autocomplete("search");
+});
+// countdown_applicable
+$('input[name=\'wk_crosssell_countdown_applicable\']').autocomplete({
+  minLength: 0,
+  delay: 101,
+  source: function(request, response) {
+    $.ajax({
+      url: 'index.php?route=extension/module/wk_crosssell/vendor&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['vendor_id']
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $('input[name=\'wk_crosssell_countdown_applicable\']').val('');
+    $('#vendor-countdown-applicable' + item['value']).remove();
+
+    $('#vendor-countdown-applicable').append('<div id="vendor-countdown-applicable' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="wk_crosssell_vendor_countdown_applicable[]" value="' + item['value'] + '" /></div>');
+
+    $('#vendor-countdown-applicable div:odd').attr('class', 'odd');
+    $('#vendor-countdown-applicable div:even').attr('class', 'even');
+
+    return false;
+  },
+  focus: function(item) {
+      return false;
+   }
+});
+
+$('#vendor-countdown-applicable').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+  $('#vendor-countdown-applicable div:odd').attr('class', 'odd');
+  $('#vendor-countdown-applicable div:even').attr('class', 'even');
+});
+
+$('input[name=\'wk_crosssell_units_applicable\']').click(function(){
+  $(this).autocomplete("search");
+});
+// units_applicable
+$('input[name=\'wk_crosssell_units_applicable\']').autocomplete({
+  minLength: 0,
+  delay: 101,
+  source: function(request, response) {
+    $.ajax({
+      url: 'index.php?route=extension/module/wk_crosssell/vendor&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['vendor_id']
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $('input[name=\'wk_crosssell_units_applicable\']').val('');
+    $('#vendor-units-applicable' + item['value']).remove();
+
+    $('#vendor-units-applicable').append('<div id="vendor-units-applicable' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="wk_crosssell_vendor_units_applicable[]" value="' + item['value'] + '" /></div>');
+
+    $('#vendor-units-applicable div:odd').attr('class', 'odd');
+    $('#vendor-units-applicable div:even').attr('class', 'even');
+
+    return false;
+  },
+  focus: function(item) {
+      return false;
+   }
+});
+
+$('#vendor-units-applicable').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+  $('#vendor-units-applicable div:odd').attr('class', 'odd');
+  $('#vendor-units-applicable div:even').attr('class', 'even');
+});
+
+$('#countdown a:first').trigger('click');
+$('#countdowntime a:first').trigger('click');
+$('#units a:first').trigger('click');
+$('#widget-details a:first').trigger('click');
+$('#listing-details a:first').trigger('click');
+
+if ($('#wk_cdeploy4').is(':checked')) {
+  $('#wk_cdeploy').slideDown();
+}
+
+$('#wk_cdeploy4').on('change', function() {
+  if ($('#wk_cdeploy4').is(':checked')) {
+    $('#wk_cdeploy').slideDown();
+  }
+});
+$('.wk_cdeploy').on('change', function() {
+  if ($('.wk_cdeploy').is(':checked')) {
+    $('#wk_cdeploy').slideUp();
+  }
+});
+
+var rows = 0;
+$('#stats-load').on('click', function () {
+  var stats_body = $('.stats-body').html();
+  if ($.trim(stats_body) == '') {
+    getTableData(0);
+  }
+});
+
+var number, showing, all = false, prev = 0;
+$(window).on('scroll', function () {
+
+  if ($('#tab-stats').hasClass('active')) {
+    var diff = $(document).height() - $(window).height();
+    var foot = diff - $(window).scrollTop();
+
+    if (foot == 0) {
+        number = $('.stats-body tr:last-child').attr('count');
+
+        if (number && (number != prev) && !all) {
+          getTableData(number);
+          prev = number;
+        }
+    };
+  }
+});
+
+function getTableData (start) {
+  var content;
+  $.ajax({
+    url: 'index.php?route=extension/module/wk_crosssell/stats&user_token={{ user_token }}&start_limit=' + start,
+    dataType: 'json',
+    beforeSend: function() {
+      $('#wkfoot').addClass('fa-spinner');
+    },
+    success: function(json) {
+      if (json) {
+        for (var i = 0; i < json['total']; i++) {
+          rows++;
+          content = '<tr count="' + rows + '">';
+          content += '<td class="text-right">' + json["table_data"][i]["vendor_id"] + '</td>';
+          content += '<td>' + json["table_data"][i]["vendor_name"] + '</td>';
+          content += '<td class="text-right">' + json["table_data"][i]["store_id"] + '</td>';
+          content += '<td>' + json["table_data"][i]["parents"] + '</td>';
+          content += '<td>' + json["table_data"][i]["childs"] + '</td>';
+          content += '<td>' + json["table_data"][i]["date_added"] + '</td>';
+          content += '<td>' + json["table_data"][i]["date_start"] + '</td>';
+          content += '<td>' + json["table_data"][i]["date_end"] + '</td>';
+          content += '<td>Cross-sell</td>';
+          content += '<td><a onclick="return confirm(\'{{ text_confirm_delete }}\');" href="' + json["table_data"][i]["delete"] + '" class="btn btn-danger"><i class="fa fa-times"></i></td>';
+          content += '<td>' + json["table_data"][i]["countdown"] + '</td>';
+          content += '<td class="text-right">' + json["table_data"][i]["units"] + '</td>';
+          content += '</tr>';
+          $('.stats-body').append(content);
+        };
+        showing = parseInt(start) + parseInt(json['total']);
+        content = 'Showing ' + showing + ' of ' + json['all'] + ' results';
+        $('.stats-result').text(content);
+        if (showing == json['all']) {
+          all = true;
+        };
+      }
+      $('#wkfoot').removeClass('fa-spinner');
+    }
+  });
+}
+
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $(document).on('keydown', ".int_number",function (e) {
+      if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
+          (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+          (e.keyCode >= 35 && e.keyCode <= 40)) {
+               return;
+      }
+      if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+          e.preventDefault();
+      }
+  });
+
+  $(document).on('keypress', ".float_number", function(event) {
+    var flag = false;
+
+    if(event.which == 46 && $(this).val() == ''){
+      flag = true;
+    }
+
+    if((event.which < 48 || event.which > 57) && (event.which == 46 && $(this).val().indexOf('.') != -1) || ((event.which < 48 || event.which > 57) && event.which != 46)) {
+      flag = true;
+    }
+
+    if(flag) {
+      event.preventDefault();
+    }
+  });
+
+  //Avoid to paste any type of value in these fileds
+  $(document).on('paste', ".dimentions, .price, .weight, .quantity", function(event) {
+    event.preventDefault();
+  });
+});
+</script>
+{{ footer }}

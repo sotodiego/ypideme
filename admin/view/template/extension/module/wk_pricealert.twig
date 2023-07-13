@@ -1,0 +1,450 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-wk-pricealert" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if (error_warning) %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ heading_title }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-wk-pricealert" class="form-horizontal">
+          <style>
+          small {
+            font-size: 95%;
+            font-weight: 400;
+          }
+          </style>
+          <style type="text/css">
+            .wk_alert_info {
+                background-color: #ddffdd;
+                border-left: 6px solid #4CAF50;
+                min-height: 50px;
+                padding: 15px;
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+          </style>
+          <div class="wk_alert_info ">
+          {{ text_alert_info }}
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+            <div class="col-sm-10">
+              <select name="module_wk_pricealert_status" id="input-status" class="form-control">
+                {% if (wk_pricealert_status) %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+              <small class="form-text text-muted text-info">{{ help_status }}</small>
+            </div>
+          </div>
+
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab-setting" data-toggle="tab"><i class="fa fa-cog text-success"></i> {{ tab_setting }}</a></li>
+            <li><a href="#tab-quote" data-toggle="tab"><i class="fa fa-usd text-success"></i> {{ tab_quote }}</a></li>
+            <li><a href="#tab-performance" data-toggle="tab"><i class="fa fa-bell text-success"></i> {{ tab_performance }}</a></li>
+            <li><a href="#tab-coupon" data-toggle="tab"><i class="fa fa-ticket text-success"></i> {{ tab_coupon }}</a></li>
+          </ul>
+          <div class="tab-content">
+
+            <!--  tab setting started-->
+            <div class="tab-pane active" id="tab-setting">
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-allow_guest">{{ entry_allow_guest }}</label>
+                <div class="col-sm-10">
+                  <select name="wk_pricealert_allow_guest" id="input-allow_guest" class="form-control">
+                    {% if (wk_pricealert_allow_guest) %}
+                      <option value="1" selected="selected">{{ text_enabled }}</option>
+                      <option value="0">{{ text_disabled }}</option>
+                    {% else %}
+                      <option value="1">{{ text_enabled }}</option>
+                      <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %}
+                  </select>
+                  <small class="form-text text-muted text-info">{{ help_allow_guest }}</small>
+                </div>
+              </div>
+
+              <fieldset>
+                <legend>{{ entry_mp_feature }}<small class="form-text text-muted text-warning">{{ help_mp_feature }}</small></legend>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-limit_seller">{{ entry_limit_seller }}</label>
+                  <div class="col-sm-10">
+                    <input class="form-control int_number" min="0" type="number" name="wk_pricealert_limit_seller" id="input-limit_seller" value="{{ wk_pricealert_limit_seller is defined ? wk_pricealert_limit_seller : 1000 }}"></input>
+                    <small class="form-text text-muted text-info">{{ help_limit_seller }}</small>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-allow_seller">{{ entry_allow_seller }}</label>
+                  <div class="col-sm-10">
+                    <select name="wk_pricealert_allow_seller" id="input-allow_seller" class="form-control">
+                      {% if (wk_pricealert_allow_seller) %}
+                      <option value="1" selected="selected">{{ text_enabled }}</option>
+                      <option value="0">{{ text_disabled }}</option>
+                      {% else %}
+                      <option value="1">{{ text_enabled }}</option>
+                      <option value="0" selected="selected">{{ text_disabled }}</option>
+                      {% endif %}
+                    </select>
+                    <small class="form-text text-muted text-info">{{ help_allow_seller }}</small>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-notify_admin">{{ entry_notify_admin }}</label>
+                  <div class="col-sm-10">
+                    <select name="wk_pricealert_notify_admin" id="input-notify_admin" class="form-control">
+                      {% if (wk_pricealert_notify_admin) %}
+                      <option value="1" selected="selected">{{ text_enabled }}</option>
+                      <option value="0">{{ text_disabled }}</option>
+                      {% else %}
+                      <option value="1">{{ text_enabled }}</option>
+                      <option value="0" selected="selected">{{ text_disabled }}</option>
+                      {% endif %}
+                    </select>
+                    <small class="form-text text-muted text-info">{{ help_notify_admin }}</small>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <!--  tab Genral Setting started-->
+            <!--  tab Quate started-->
+            <div class="tab-pane" id="tab-quote">
+              <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab-temp" data-toggle="tab">{{ "Templates"}}</a></li>
+                <li><a href="#tab-info" data-toggle="tab">{{ 'Info' }}</a></li>
+              </ul>
+              <div class="tab-content">
+                  <div class="tab-pane active" id="tab-temp">
+                    <fieldset>
+                      <legend>{{ enrty_price_change }}</legend>
+                      <!-- <div class="form-group">
+
+                          <label class="col-sm-2 control-label" for="input-email-subject">{{ entry_email_subject }}</label>
+
+                        <div class="col-sm-10">
+                          {% for language in languages %}
+                            <div class="input-group" style="margin-bottom:2px;"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> {{ language['name'] }}</span>
+                              <input type="text" name="wk_pricealert_email_subject[{{ language['language_id'] }}]" placeholder="{{ entry_email_subject }}" id="input-email-subject" class="form-control" value="{{ wk_pricealert_email_subject[language['language_id']] is defined ? wk_pricealert_email_subject[language['language_id']] : '' }}" />
+                            </div>
+                          {% endfor %}
+                          <small class="form-text text-muted text-info">{{ help_email_subject }}</small>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-email-text"><span data-toggle="tooltip" title="{{ help_email_text }}">{{ entry_email_text }}</span></label>
+                        <div class="col-sm-10">
+                          <div class="tab-pane" id="tab-email">
+                            <ul class="nav nav-tabs" id="email">
+                              {% for language in languages %}
+                              <li><a href="#tab-email-language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> {{ language['name'] }}</a></li>
+                              {% endfor %}
+                            </ul>
+                            <div class="tab-content">
+                              {% for language in languages %}
+                              <div class="tab-pane" id="tab-email-language{{ language['language_id'] }}">
+                                <div class="form-group">
+                                  <textarea name="wk_pricealert_email_text[{{ language['language_id'] }}]" placeholder="{{ entry_email_text }}" data-toggle="summernote" data-lang="{{ summernote }}" class="form-control summernote" rows="3">{{ wk_pricealert_email_text[language['language_id']] is defined ? wk_pricealert_email_text[language['language_id']] : '' }}</textarea>
+                                </div>
+                              </div>
+                              {% endfor %}
+
+                            </div>
+                          </div>
+                        </div>
+                      </div> -->
+
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-email-notification-subject">{{ entry_email_subject }}</label>
+                        <div class="col-sm-10">
+                          {% for language in languages %}
+                            <div class="input-group" style="margin-bottom:2px;"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> {{ language['name'] }}</span>
+                              <input type="text" name="wk_pricealert_email_notification_subject[{{ language['language_id'] }}]" placeholder="{{ entry_email_subject }}" id="input-email-notification-subject" class="form-control" value="{{ wk_pricealert_email_notification_subject[language['language_id']] is defined ? wk_pricealert_email_notification_subject[language['language_id']] : '' }}" />
+                            </div>
+                          {% endfor %}
+                          <small class="form-text text-muted text-info">{{ help_email_subject_vendor }}</small>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-email-notification">{{ entry_email_text }}</label>
+                        <div class="col-sm-10">
+                          <div class="tab-pane" id="tab-email-notification">
+                            <ul class="nav nav-tabs" id="email-notification">
+                              {% for language in languages %}
+                              <li><a href="#tab-email-noti-language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> {{ language['name'] }}</a></li>
+                              {% endfor %}
+                            </ul>
+                            <div class="tab-content">
+                              {% for language in languages %}
+                              <div class="tab-pane" id="tab-email-noti-language{{ language['language_id'] }}">
+                                <div class="form-group">
+                                  <textarea name="wk_pricealert_email_notification[{{ language['language_id'] }}]" placeholder="{{ entry_email_notification }}" data-toggle="summernote" data-lang="{{ summernote }}" class="form-control summernote" rows="3">{{ wk_pricealert_email_notification[language['language_id']] is defined ? wk_pricealert_email_notification[language['language_id']] : '' }}</textarea>
+                                </div>
+                              </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset>
+                      <legend>{{ tab_price_accepted }}</legend>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-email-accept-subject">{{ entry_email_subject }}</label>
+                        <div class="col-sm-10">
+                          {% for language in languages %}
+                            <div class="input-group" style="margin-bottom:2px;"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> {{ language['name'] }}</span>
+                              <input type="text" name="wk_pricealert_email_accept_subject[{{ language['language_id'] }}]" placeholder="{{ entry_email_subject }}" id="input-email-accept-subject" class="form-control" value="{{ wk_pricealert_email_accept_subject[language['language_id']] is defined ? wk_pricealert_email_accept_subject[language['language_id']] : '' }}" />
+                            </div>
+                          {% endfor %}
+                          <small class="form-text text-muted text-info">{{ help_email_subject }}</small>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-email-text">{{ entry_email_text }}</label>
+                        <div class="col-sm-10">
+                          <div class="tab-pane" id="tab-email-accept">
+                            <ul class="nav nav-tabs" id="email-accept">
+                              {% for language in languages %}
+                              <li><a href="#tab-email-accept-language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> {{ language['name'] }}</a></li>
+                              {% endfor %}
+                            </ul>
+                            <div class="tab-content">
+                              {% for language in languages %}
+                              <div class="tab-pane" id="tab-email-accept-language{{ language['language_id'] }}">
+                                <div class="form-group">
+                                  <textarea name="wk_pricealert_email_accept_text[{{ language['language_id'] }}]" placeholder="{{ entry_email_text }}" class="form-control summernote" data-toggle="summernote" data-lang="{{ summernote }}" rows="3">{{ wk_pricealert_email_accept_text[language['language_id']] is defined ? wk_pricealert_email_accept_text[language['language_id']] : '' }}</textarea>
+                                </div>
+                              </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+
+                    </fieldset>
+                    <fieldset>
+                      <legend>{{ tab_price_rejected }}</legend>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-email-subject">{{ entry_email_subject }}</label>
+                        <div class="col-sm-10">
+                          {% for language in languages %}
+                            <div class="input-group" style="margin-bottom:2px;"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> {{ language['name'] }}</span>
+                              <input type="text" name="wk_pricealert_email_reject_subject[{{ language['language_id'] }}]" placeholder="{{ entry_email_subject }}" id="input-email-subject" class="form-control" value="{{ wk_pricealert_email_reject_subject[language['language_id']] is defined ? wk_pricealert_email_reject_subject[language['language_id']] : '' }}" />
+                            </div>
+                          {% endfor %}
+                          <small class="form-text text-muted text-info">{{ help_email_subject }}</small>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-email-text">{{ entry_email_text }}</label>
+                        <div class="col-sm-10">
+                          <div class="tab-pane" id="tab-email-reject">
+                            <ul class="nav nav-tabs" id="email-reject">
+                              {% for language in languages %}
+                              <li><a href="#tab-email-reject-language{{ language['language_id'] }}" data-toggle="tab"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> {{ language['name'] }}</a></li>
+                              {% endfor %}
+                            </ul>
+                            <div class="tab-content">
+                              {% for language in languages %}
+                              <div class="tab-pane" id="tab-email-reject-language{{ language['language_id'] }}">
+                                <div class="form-group">
+                                  <textarea name="wk_pricealert_email_reject_text[{{ language['language_id'] }}]" placeholder="{{ entry_email_text }}" class="form-control summernote" data-toggle="summernote" data-lang="{{ summernote }}"  rows="3">{{ wk_pricealert_email_reject_text[language['language_id']] is defined ? wk_pricealert_email_reject_text[language['language_id']] : '' }}</textarea>
+                                </div>
+                              </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </fieldset>
+                  </div>
+                  <div class="tab-pane" id="tab-info">
+                    <p class="text-info">{{ info_mail_add }}</p>
+                    <table class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <td>{{ entry_for}}</td>
+                          <td>{{ entry_code}}</td>
+                        </tr>
+                      </thead>
+
+                      <tr>
+                        <td>{{ 'Customer Name' }}</td>
+                        <td>{{ '{customer_name}' }}</td>
+                      </tr>
+                      <tr>
+                        <td>{{ 'Product Image' }}</td>
+                        <td>{{ '{product_image}' }}</td>
+                      </tr>
+                      <tr>
+                        <td>{{ 'Product Name' }}</td>
+                        <td>{{ '{product_name}' }}</td>
+                      </tr>
+                      <tr>
+                        <td>{{ 'Coupon validate date' }}</td>
+                        <td>{{ '{coupon_validity_date}' }}</td>
+                      </tr>
+                      <tr>
+                        <td>{{ 'Coupon code' }}</td>
+                        <td>{{ '{coupon_code}' }}</td>
+                      </tr>
+                      <tr>
+                        <td>{{ 'Product Link' }}</td>
+                        <td>{{ '{product_link}' }}</td>
+                      </tr>
+                      <tr>
+                        <td>{{ 'Notifications' }}</td>
+                        <td>{{ '{times_notification}' }}</td>
+                      </tr>
+
+                    </table>
+                  </div>
+                </div>
+            </div>
+            <!--  tab Quate Ends-->
+            <!--  tab Performance started-->
+            <div class="tab-pane" id="tab-performance">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                  <thead class="btn-primary">
+                    <tr>
+                      <td>{{ text_users }}</td>
+                      <td>{{ text_request_by_customer }}</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ text_registered }}</td>
+                      <td><input type="number" min="0" max="999" class="form-control int_number" name="wk_pricealert_registered_request" value="{{ wk_pricealert_registered_request }}" {% if error_wk_pricealert_registered_request %} autofocus="autofocus" {% endif %}>
+                        {% if error_wk_pricealert_registered_request %}
+                    <div class="text-danger">{{ error_wk_pricealert_registered_request }}</div>
+                    {% endif %}
+
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{{ text_unregistered }}</td>
+                      <td><input type="number" min="0" max="999" class="form-control int_number" name="wk_pricealert_unregistered_request" value="{{ wk_pricealert_unregistered_request }}"  {% if error_wk_pricealert_unregistered_request %} autofocus="autofocus" {% endif %}>
+                        {% if error_wk_pricealert_unregistered_request %}
+                    <div class="text-danger">{{ error_wk_pricealert_unregistered_request }}</div>
+                    {% endif %}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!--  tab Performance Ends-->
+            <div class="tab-pane" id="tab-coupon">
+              <div class="form-group required">
+                <label class="col-sm-2 control-label" for="input-coupon-validity">{{ entry_coupon_validity }}</label>
+                <div class="col-sm-10">
+                  <div class="input-group">
+                    <input type="number" class="form-control int_number" min="0" max="100" value="{{ wk_pricealert_coupon_validity }}" name="wk_pricealert_coupon_validity" id="input-coupon-validity"  {% if error_wk_pricealert_coupon_validity %} autofocus="autofocus" {% endif %}>
+                    <span class="input-group-addon"><i>Days</i></span>
+                  </div>
+                  <small class="form-text text-muted text-info">{{ help_coupon_validity }}</small>
+                  {% if error_wk_pricealert_coupon_validity %}
+                   <div class="text-danger">{{ error_wk_pricealert_coupon_validity }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group required">
+                <label class="col-sm-2 control-label" for="input-coupon-name">{{ entry_coupon_name }}</label>
+                <div class="col-sm-10">
+                  {% for language in languages %}
+                    <div class="input-group" style="margin-bottom:2px;"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> {{ language['name'] }}</span>
+                      <input type="text" name="wk_pricealert_coupon_name[{{ language['language_id'] }}]" placeholder="{{ entry_coupon_name }}" id="input-coupon-name" class="form-control" value="{{ wk_pricealert_coupon_name[language['language_id']] is defined ? wk_pricealert_coupon_name[language['language_id']] : '' }}" />
+                    </div>
+                  {% if error_wk_pricealert_coupon_name[language['language_id']] %}
+                  <div class="text-danger">{{ error_wk_pricealert_coupon_name[language['language_id']] }}</div>
+                  {% endif %}
+                  {% endfor %}
+                  <small class="form-text text-muted text-info ">{{ help_coupon_name }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="view/javascript/codemirror/lib/formatting.js"></script>
+<script type="text/javascript" src="view/javascript/summernote/summernote.js"></script>
+<link href="view/javascript/summernote/summernote.css" rel="stylesheet" />
+<script type="text/javascript" src="view/javascript/summernote/summernote-image-attributes.js"></script>
+<script type="text/javascript" src="view/javascript/summernote/opencart.js"></script>
+<script type="text/javascript">
+
+ $('#language a:first').tab('show');
+ $('#design a:first').trigger('click');
+ $('#email a:first').trigger('click');
+ $('#email-notification a:first').trigger('click');
+ $('#email-accept a:first').trigger('click');
+ $('#email-reject a:first').trigger('click');
+ let error_logged = '{{ error_wk_pricealert_registered_request }}';
+ let error_guest = '{{ error_wk_pricealert_unregistered_request }}';
+ let flg = 1;
+ if(error_logged != '' || error_guest != '') {
+   // select the tab with no error
+    $('#tab-performance').addClass('active');
+    $('[href="#tab-performance"]').parent().addClass('active');
+    $('#tab-setting').removeClass('active');
+    $('[href="#tab-setting"]').parent().removeClass('active');
+    flg = 0;
+ }
+
+ let error_coupon = '{{ error_wk_pricealert_coupon_validity }}';
+  error_coupon = '{{ tab_cp }}';
+ if(flg && error_coupon != '' ){
+   $('#tab-coupon').addClass('active');
+   $('[href="#tab-coupon"]').parent().addClass('active');
+   $('#tab-setting').removeClass('active');
+   $('[href="#tab-setting"]').parent().removeClass('active');
+ }
+ $(document).ready(function() {
+   $(document).on('keydown', ".int_number",function (e) {
+       if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
+           (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+           (e.keyCode >= 35 && e.keyCode <= 40)) {
+                return;
+       }
+       if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+           e.preventDefault();
+       }
+   });
+
+   //Avoid to paste any type of value in these fileds
+   $(document).on('paste', ".int_number, .price, .weight, .quantity", function(event) {
+     event.preventDefault();
+   });
+ });
+</script>
+{{ footer }}

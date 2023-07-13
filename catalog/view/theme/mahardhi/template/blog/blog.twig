@@ -1,0 +1,86 @@
+{{ header }}	
+<div id="category-blogs" class="container">
+	<ul class="breadcrumb">
+		{% for breadcrumb in breadcrumbs %}
+			<li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+		{% endfor %}
+	</ul>
+	<div class="row">{{ column_left }}
+		{% if column_left and column_right %}
+			{% set class = 'col-sm-6' %}
+		{% elseif column_left or column_right %}
+			{% set class = 'col-sm-12' %}
+			{% set class = 'col-sm-9' %}
+		{% else %}
+			{% set class = 'col-sm-12' %} 
+		{% endif %}
+		<div id="content" class="{{ class }}">{{ content_top }}	
+		<h2 class="page_title">{{ heading_title }}</h2>
+		<div class="row category-row">
+			{% for article in articles %}
+          	
+			<div class="col-sm-6 blog-layout product-list blog-category">
+	          	<div class="blog-block clearfix">
+	          		<div class="blog-info">
+		          	 	<div class="image image-blog">
+			              	<a class="blog-img">
+			              		<img src="{{ article.image }}" alt="{{ article.name }}" title="{{ article.name }}" class="img-responsive" />
+			              	</a>
+			              	<div class="zoom-post">
+				              	<a class="hover-zoom" href="{{ article.thumb }}" data-lightbox="example-set"  title="{{rticle.name }}"></a>
+								<a class="hover-post" href="{{ article.href }}"></a>	
+							</div>	
+							{% if article.date %}
+								<span class="block-date">
+									<span class="day">{{ article.date }}</span>
+								</span>	
+							{% endif %}				
+			            </div>
+		            </div>
+		            <div class="caption-blog caption blog-description">
+						<div class="caption-thumb">		
+							<div class="blogdesk_info">								
+								<i class="fa fa-comments-o"></i><span class="blog-comment">{{ article.total_comments }} {{ text_comment }}</span>
+							</div>
+							<h4 class="blog-title"><a href="{{ article.href }}">{{ article.name }}</a></h4>
+							<div class="blog-text">
+								<span>{{ article.intro_text }}</span>									
+							</div>
+							<div class="blog-group clearfix">	
+								<a class="blog-read btn" onclick="location.href = ('{{ article.href }}');"  title="{{ text_more }}">{{ text_more }}</a>
+							</div>
+							{% if article.attributes %}
+								<h5>{{ text_attributes }}</h5>
+								{% for attribute_group in article.attributes %}
+									{% for attribute_item in attribute_group.attribute %}
+										<b>{{ attribute_item.name }}:</b> {{ attribute_item.text }}<br />
+									{% endfor %}
+								{% endfor %}
+							{% endif %}
+						</div> 
+		            </div>
+	          	</div>
+	        </div>
+	        
+			{% endfor %}
+			</div>
+			{% if articles %}
+			<div class="pro_pagination clearfix">
+				{% if pagination %}
+				<div class="col-sm-6 text-right">{{ pagination }}</div>
+				{% endif %}
+				<div class="col-sm-6 text-left">{{ results }}</div>
+			</div>
+			{% endif %}
+			{% if not articles and not categories %}
+				<p>{{ text_empty }}</p>
+				<div class="buttons">
+					<div class="pull-right"><a href="{{ continue }}" class="btn btn-primary">{{ button_continue }}</a></div>
+				</div>
+			{% endif %}
+		</div>
+		{{ column_right }}
+	</div>
+	{{ content_bottom }}
+</div>
+{{ footer }}

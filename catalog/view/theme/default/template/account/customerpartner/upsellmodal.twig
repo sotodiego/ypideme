@@ -1,0 +1,112 @@
+{% if (products is defined and products) %}
+<div class="row">
+  {% set i = 0 %}
+  {% for product in products %}
+  {% set class = 'col-sm-6 col-xs-12' %}
+  <div class="{{ class }}">
+    <div class="product-thumb transition text-center">
+      <div class="image"><a href="{{ product['href'] }}"><img src="{{ product['thumb'] }}" alt="{{ product['name'] }}" title="{{ product['name'] }}" class="img-responsive" style="margin: 0 auto;" /></a></div>
+      <div class="wkgift">
+        <h4><a href="{{ product['href'] }}">{{ product['name'] }}</a></h4>
+        <h5>{{ product['product_option_name'] }}</h5>
+        {% if (product['rating']) %}
+        <div class="rating">
+          {% set i = 1 %}{% for i in i..5 %}
+          {% if (product['rating'] < i) %}
+          <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-1x"></i></span>
+          {% else %}
+          <span class="fa fa-stack"><i class="fa fa-star fa-stack-1x"></i><i class="fa fa-star-o fa-stack-1x"></i></span>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if (product['price']) %}
+        <p class="price">
+          {% if (not product['special']) %}
+          {{ product['price'] }}
+          {% else %}
+          <span class="price-new">{{ product['special'] }}</span> <span class="price-old">{{ product['price'] }}</span>
+          {% endif %}
+          {% if (product['tax'] and tax_status) %}
+          <span class="price-tax">{{ text_tax }} {{ product['tax'] }}</span>
+          {% endif %}
+        </p>
+        {% endif %}
+        {% if (product['countdown_status'] and countdown_status) %}
+          {% set random = random(100000, 999999) %}
+          <h4 id="clock{{ random }}"></h4>
+          <script type="text/javascript">
+          var timer{{ random }} = {{ product['duration'] }};
+          var inte{{ random }} = setInterval(function () {
+            var countdown_format = '{{ product["countdown_format"] }}';
+            countdownTimer(timer{{ random }}, '{{ random }}', countdown_format);
+            if (--timer{{ random }} < 0) {
+              clearInterval(inte{{ random }});
+              $('#clock{{ random }}').parent().parent().parent().remove();
+            }
+          }, 1000);
+          countdownTimer(timer{{ random }}, '{{ random }}', '{{ product["countdown_format"] }}');
+          up_inter.push('inte{{ random }}');
+          </script>
+        {% endif %}
+        {% if (product['quantity_status'] and quantity_status) %}
+          <h3>{{ product['formatted_quantity'] }}</h3>
+        {% endif %}
+      </div>
+      <div class="button-group">
+        <button class="btn btn-default" type="button" onclick="addUpsellToCart('{{ product['id'] }}');" style="width:100%;"><span class="hidden-xs hidden-sm hidden-md">{{ button_cart }}</span> <i class="fa fa-shopping-cart"></i></button>
+      </div>
+    </div>
+  </div>
+  {% set i = i + 1 %}
+  {% endfor %}
+</div>
+{% else %}
+  <div class="row">
+    {% set class = 'col-sm-12' %}
+    <div class="{{ class }}">
+      <h1>{{ error_title }}</h1>
+      <p>{{ text_error }}</p>
+      <div class="buttons">
+        <div class="pull-right"></div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<style type="text/css">
+#wkmodalbody .product-thumb {
+  border: 1px solid;
+  border-radius: 5px;
+}
+#wkmodalbody .image {
+  min-height: 0;
+}
+.wkgift {
+  height: 170px;
+}
+</style>
+<script type="text/javascript">
+  function addToCart(product_id, min) {
+    cart.add(product_id, min);
+    $('#cart > ul').load('index.php?route=common/cart/info ul li');
+    $("#wkModal").trigger('click');
+  }
+
+  function addUpsellToCart(id) {
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/product_options/addUpsellBundle',
+      type: 'post',
+      data: 'id=' + id,
+      dataType: 'json',
+      success: function(json) {
+        if (json['success']) {
+          $('.alert').remove();
+          $('.breadcrumb').after('<div class="alert alert-success">' + json['success'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+          $('#cart > button').html('<span id="cart-total"><i class="fa fa-shopping-cart"></i> ' + json['total'] + '</span>');
+          $('#cart > ul').load('index.php?route=common/cart/info ul li');
+        }
+      }
+    });
+    $("#wkModal").trigger('click');
+  }
+</script>

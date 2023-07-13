@@ -1,0 +1,309 @@
+{{ header }}{{ separate_column_left }}
+{% if (separate_view is defined and separate_view) %}
+  <div class="container-fluid" id="content">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+    {% endfor %}
+  </ul>
+  {% if (error_warning) %}
+  <div class="alert alert-danger"><i class="fa fa-exclaimation-circle"></i> {{ error_warning }}</div>
+  {% endif %}
+  <div class="row">{{ column_left }}
+    {% if (column_left and column_right) %}
+    {% set class = 'col-sm-6' %}
+    {% elseif (column_left or column_right) %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">{{ content_top }}
+      <h1>{{ heading_title_insert }}
+        <div class="pull-right btn-group">
+          <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+          {% if (upsell_allowed and wkIsMember) %}
+          <button type="button" onclick="$('#form-upsell').submit();" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+          {% endif %}
+        </div>
+      </h1>
+      {% if (wkIsMember) %}
+      {% if (upsell_allowed) %}
+      <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-upsell" class="form-horizontal">
+        <br>
+        <fieldset>
+          <legend>{{ text_product_upsell }}</legend>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-child-products"><span data-toggle="tooltip" title="{{ help_upsell_products }}">{{ entry_add_product }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="child_products" value="" placeholder="{{ entry_add_product }}" id="input-child-products" class="form-control" />
+              <div id="vendor-child-products" class="well well-sm" style="height: 250px; overflow: auto;">
+                {% set class = 'odd' %}
+                {% for child_key,child_prod in child_prods %}
+                {% set class = class == 'even' ? 'odd' : 'even' %}
+                <div id="vendor-child-products{{ child_prod['child_id'] }}" class="{{ class }}"><i class="fa fa-minus-circle"></i> {{ child_prod['child_name'] }}
+                  <input type="hidden" name="product_child[]" value="{{ child_prod['child_id'] }}" />
+                  <!-- <input type="file" name="image[]" value="" class="hide" accept="image/*" class="form-control"/>  -->
+                  <img src="{{ child_prods[child_key]['thumb'] }}" class="img-thumbnail /*click-file*/"/>
+                  <!-- <span class="btn-group imgoption">
+                    <button name="edit_img" type="button" class="btn btn-primary btn-sm click-edit">{{ text_edit }}</button>
+                    <button type="button" class="btn btn-danger btn-sm delete_img">{{ text_remove }}</button>
+                  </span> -->
+                  <input type="hidden" name="photo[]" value="{{ child_prods[child_key]['image'] }}" class="form-control"/>
+                </div>
+                {% endfor %}
+              </div>
+              {% if (error_product_child) %}
+              <div class="text-danger">{{ error_product_child }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>{{ text_display_position }}</legend>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-parent-products"><span data-toggle="tooltip" title="{{ help_set_to_product }}">{{ entry_set_to_product }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="parent_products" value="" placeholder="{{ entry_add_product }}" id="input-parent-products" class="form-control" />
+              <div id="vendor-parent-products" class="well well-sm" style="height: 150px; overflow: auto;">
+                {% set class = 'odd' %}
+                {% for parent_prod in parent_prods %}
+                {% set class = class == 'even' ? 'odd' : 'even' %}
+                <div id="vendor-parent-products{{ parent_prod['parent_id'] }}" class="{{ class }}"><i class="fa fa-minus-circle"></i> {{ parent_prod['parent_name'] }}
+                  <input type="hidden" name="product_parent[]" value="{{ parent_prod['parent_id'] }}" />
+                </div>
+                {% endfor %}
+              </div>
+              {% if (error_product_parent) %}
+              <div class="text-danger">{{ error_product_parent }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </fieldset>
+        {% if (countdown_allowed) %}
+        <fieldset>
+          <legend>{{ text_countdown }}</legend>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-countdown-status"><span data-toggle="tooltip" data-original-title="{{ help_countdown_status }}">{{ entry_countdown_status }}</span></label>
+            <div class="col-sm-10">
+              <select name="countdown_status" id="input-status" class="form-control">
+                {% if (countdown_status) %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+        {% endif %}
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-countdown-format"><span data-toggle="tooltip" data-original-title="{{ help_date }}">{{ entry_date }}</span></label>
+            <div class="col-sm-10">
+              <label class="radio">
+                {{ entry_from_date }}
+              </label>
+              <div class="input-group date col-sm-6">
+                <input type="text" name="date_start" value="{{ date_start }}" placeholder="{{ entry_from_date }}" data-date-format="YYYY-MM-DD HH:mm" id="input-date-available" class="form-control date" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+              {% if (error_date_start) %}
+              <div class="text-danger">{{ error_date_start }}</div>
+              {% endif %}
+              <label class="radio">
+                {{ entry_to_date }}
+              </label>
+              <div class="input-group date col-sm-6">
+                <input type="text" name="date_end" value="{{ date_end }}" placeholder="{{ entry_to_date }}" data-date-format="YYYY-MM-DD HH:mm" id="input-date-available" class="form-control date" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+              {% if (error_date_end) %}
+              <div class="text-danger">{{ error_date_end }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </fieldset>
+        {% if (units_allowed) %}
+        <fieldset>
+          <legend>{{ text_units }}</legend>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-units-status"><span data-toggle="tooltip" data-original-title="{{ help_units_status }}">{{ entry_units_status }}</span></label>
+            <div class="col-sm-10">
+              <select name="quantity_status" id="input-units-status" class="form-control">
+                {% if (quantity_status) %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-units-available"><span data-toggle="tooltip" data-original-title="{{ help_units_available }}">{{ entry_units_available }}</span></label>
+            <div class="col-sm-10">
+              <input type="number" name="quantity" value="{{ quantity }}" placeholder="{{ entry_units_available }}" id="input-units-available" class="form-control" {% if (not quantity_status) %} {{ "disabled" }} {% endif %} />
+              {% if (error_quantity) %}
+              <div class="text-danger">{{ error_quantity }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </fieldset>
+        {% endif %}
+      </form>
+      {% endif %}
+      {% else %}
+        <div class="text-danger">{{ error_membership_access }}</div>
+      {% endif %}
+      {{ content_bottom }}</div>
+    {{ column_right }}</div>
+</div>
+<script type="text/javascript">
+
+$('.date').datetimepicker();
+
+$('input[name=\'child_products\']').click(function(){
+  $(this).autocomplete("search");
+});
+// child_products
+$('input[name=\'child_products\']').autocomplete({
+  minLength: 0,
+  delay: 101,
+  source: function(request, response) {
+    $.ajax({
+      url: 'index.php?route=account/customerpartner/upsell/autocomplete&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['product_id'],
+            image: item['image'],
+            thumb: item['thumb']
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $('input[name=\'child_products\']').val('');
+    $('#vendor-child-products' + item['value']).remove();
+
+    var toappend = '<div id="vendor-child-products' + item['value'] + '">';
+    toappend += '<i class="fa fa-minus-circle"></i> ';
+    toappend += item['label'];
+    toappend += '<input type="hidden" name="product_child[]" value="' + item['value'] + '" />';
+    toappend += '<input type="file" name="image[]" value="" class="hide" accept="image/*" class="form-control"/> ';
+    toappend += '<img src="' + item['thumb'] + '" class="img-thumbnail /*click-file*/"/>';
+    // toappend += '<span class="btn-group imgoption"><button name="edit_img" type="button" class="btn btn-primary btn-sm click-edit">{{ text_edit }}</button><button type="button" class="btn btn-danger btn-sm delete_img">{{ text_remove }}</button></span>';
+    toappend += '<input type="hidden" name="photo[]" value="' + item['image'] + '" class="form-control"/>';
+    toappend += '</div>';
+
+    $('#vendor-child-products').append(toappend);
+
+    $('#vendor-child-products div:odd').attr('class', 'odd');
+    $('#vendor-child-products div:even').attr('class', 'even');
+
+    return false;
+  },
+  focus: function(item) {
+      return false;
+   }
+});
+
+$('#vendor-child-products').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+  $('#vendor-child-products div:odd').attr('class', 'odd');
+  $('#vendor-child-products div:even').attr('class', 'even');
+});
+
+$('input[name=\'parent_products\']').click(function(){
+  $(this).autocomplete("search");
+});
+// parent_products
+$('input[name=\'parent_products\']').autocomplete({
+  minLength: 0,
+  delay: 101,
+  source: function(request, response) {
+    $.ajax({
+      url: 'index.php?route=customerpartner/autocomplete/product&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['product_id']
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $('input[name=\'parent_products\']').val('');
+    $('#vendor-parent-products' + item['value']).remove();
+
+    $('#vendor-parent-products').append('<div id="vendor-parent-products' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product_parent[]" value="' + item['value'] + '" /></div>');
+
+    $('#vendor-parent-products div:odd').attr('class', 'odd');
+    $('#vendor-parent-products div:even').attr('class', 'even');
+
+    return false;
+  },
+  focus: function(item) {
+      return false;
+   }
+});
+
+$('#vendor-parent-products').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+  $('#vendor-parent-products div:odd').attr('class', 'odd');
+  $('#vendor-parent-products div:even').attr('class', 'even');
+});
+
+// $('body').on('click','.click-file',function(){
+//   $(this).prev().trigger('click');
+// })
+
+// $('body').on('click','.click-edit',function(){
+//   $(this).parent().prev().prev().trigger('click');
+// })
+
+// $('body').on('click','.delete_img',function(){
+//   $(this).parent().prev().attr('src', '{{ placeholder_image }}');
+//   $(this).parent().next().attr('value', '');
+// });
+
+$("#input-units-status").on('change', function () {
+  if ($(this).val() == 1) {
+    $('#input-units-available').removeAttr('disabled');
+  } else {
+    $('#input-units-available').attr('disabled', 'disabled');
+  }
+});
+
+$(function() {
+  $("body").on("change","input[type='file']", function() {
+    $.this = this;
+    var files = !!this.files ? this.files : [];
+    if (!files.length || !window.FileReader) return; /* no file selected, or no FileReader support */
+    if (/^image/.test( files[0].type)) { /* only image file */
+      var reader = new FileReader(); /* instance of the FileReader */
+      reader.readAsDataURL(files[0]); /* read the local file */
+
+      reader.onloadend = function() { /* set image to display only */
+        src = this.result;
+        $($.this).next().attr('src',src);
+      }
+    }
+  });
+});
+</script>
+{{ footer }}

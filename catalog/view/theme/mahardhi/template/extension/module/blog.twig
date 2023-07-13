@@ -1,0 +1,87 @@
+<div class="mblog section box">
+	<div class="container">
+	{% if heading_title %}
+		<div class="page-title section"><h3>{{ heading_title }}</h3></div>
+	{% endif %}
+	{% if html %}
+		{{ html }}
+	{% endif %}
+	{% set articleForSlider = 3 %}
+	{% set articleCount = articles|length %}
+	<div class="row">
+	<div id="blogcarousel" class="blogs-block {% if articleCount > articleForSlider %} blog-carousel {% endif %} clearfix">
+		{% if articleCount > articleForSlider %}
+			{% set class = ' col-xs-12' %}
+		{% else %}
+			{% set class = ' col-lg-4 col-md-4 col-sm-6 col-xs-12' %}
+		{% endif %}
+		{% for article in articles %}
+			<div  class="product-layout {{class}}">
+				<div class="item">
+					<div class="product-block blog-block transition">
+						{% if article.image %}
+						<div class="blog-info">
+							<div class="image">
+								<a href="{{ article.href }}"><img src="{{ article.image }}" alt="{{ article.title }}" title="{{article.name }}" class="img-responsive" /></a>
+								<div class="zoom-post">
+									<a class="hover-zoom" href="{{ article.thumb }}" data-lightbox="example-set"  title="{{rticle.name }}"></a>
+									<a class="hover-post" href="{{ article.href }}"></a>	
+								</div>
+								{% if article.date %}
+									<span class="block-date">
+										<span class="day">{{ article.date }}</span>
+									</span>	
+								{% endif %}							
+							</div>							
+						</div>
+						{% endif %}
+						<div class="caption blog-description">
+							<div class="link_info">
+								<div class="blogdesk_info">								
+									<i class="fa fa-comments-o"></i><span class="blog-comment">{{ article.total_comments }} {{ text_comment }}</span>
+								</div>
+								<h4><a href="{{ article.href }}">{{ article.name }}</a></h4>								
+								<div class="blog-text">
+									<span>{{ article.preview }}</span>									
+								</div>
+								
+								<div class="blog-group clearfix">	
+									<a class="blog-read btn" onclick="location.href = ('{{ article.href }}');"  title="{{ text_more }}">{{ text_more }}</a>
+								</div>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+	</div>
+	</div>
+</div>
+ <script><!--
+// set slider
+const direc = $('html').attr('dir');
+
+$('.blog-carousel').each(function () {
+	if ($(this).closest('#column-left').length == 0 && $(this).closest('#column-right').length == 0) {
+		$(this).addClass('owl-carousel owl-theme');
+			const items = $(this).data('items') || 3;
+			const sliderOptions = {
+				loop: false,
+				nav: true,
+				navText: ['<i class="fa fa-angle-left"></i>','<i class="fa fa-angle-right"></i>'],
+				dots: false,
+				items: items,
+				responsiveRefreshRate: 200,
+				responsive: {
+				0: { items: 1 },
+				641: { items: 2 },
+				1200: { items: items }
+			}
+		};
+		if (direc == 'rtl') sliderOptions['rtl'] = true;
+		$(this).owlCarousel(sliderOptions);
+	}
+});
+//--></script>

@@ -1,0 +1,231 @@
+<!-- Modal -->
+<div class="modal fade" id="wkPrice" role="dialog" tabindex='-1'>
+  <div class="modal-dialog modal-sm" style="width:600px;">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <p class="modal-title" id="wkmodalheader"><h3>{{ text_suggest }} <i class="fa fa-bell text-danger"></i></h3></p>
+      </div>
+      <div class="modal-body" id="wkmodalbody">
+        <form class="form-horizontal" id="form-quote" method="post">
+          <!-- {% for option in options %}
+
+              {% if (option['type'] == 'select') %}
+              <div class="form-group{{ option['required'] ? ' required' : '' }}">
+
+                  <label class="col-sm-3 control-label" for="input-option{{ option['product_option_id'] }}"><strong>{{ option['name'] }}</strong></label>
+                  <div class="col-sm-9">
+                      <div class="input-group">
+                          <select name="{{ option['product_option_id'] }}" id="input-option{{ option['product_option_id'] }}" class="form-control">
+                          {% for option_value in option['product_option_value'] %}
+
+                          <option value="{{ option_value['product_option_value_id'] }}">{{ option_value['name'] }}
+                          {% if (option_value['price']) %}
+                          ({{ option_value['price_prefix'] }}{{ option_value['price'] }})
+                          {% endif %}
+                          </option>
+                          {% endfor %}
+                          </select>
+                      </div>
+                  </div>
+              </div>
+              {% endif %}
+              {% if (option['type'] == 'radio') %}
+              <div class="form-group{{ option['required'] ? ' required' : '' }}">
+                  <label class="control-label col-sm-3"><strong>{{ option['name'] }}</strong></label>
+                  <div id="input-option{{ option['product_option_id'] }}">
+                  <div class="col-sm-9">
+                  {% for option_value in option['product_option_value'] %}
+
+                  <div class="input-group">
+                  <div class="radio">
+                      <label>
+                      <input type="radio" name="{{ option['product_option_id'] }}" value="{{ option_value['product_option_value_id'] }}" />
+                      {{ option_value['name'] }}
+                      {% if (option_value['price']) %}
+                      ({{ option_value['price_prefix'] }}{{ option_value['price'] }})
+                      {% endif %}
+                      </label>
+                  </div></div>
+                  {% endfor %}
+                  </div></div>
+              </div>
+              {% endif %}
+              {% if (option['type'] == 'checkbox') %}
+                  <div class="form-group{{ option['required'] ? ' required' : '' }}">
+                      <label class="control-label col-sm-3"><strong>{{ option['name'] }}</strong></label>
+                      <div id="input-option{{ option['product_option_id'] }}">
+                      <div class="col-sm-9">
+                      {% for option_value in option['product_option_value'] %}
+
+                      <div class="input-group">
+                      <div class="checkbox">
+                          <label>
+                          <input type="checkbox" name="{{ option['product_option_id'] }}" value="{{ option_value['product_option_value_id'] }}" />
+                          {% if (option_value['image']) %}
+                          <img src="{{ option_value['image'] }}" alt="{{ option_value['name'] ~ option_value['price'] ? ' ' ~ option_value['price_prefix'] ~ option_value['price'] : '' }}" class="img-thumbnail" />
+                          {% endif %}
+                          {{ option_value['name'] }}
+                          {% if (option_value['price']) %}
+                          ({{ option_value['price_prefix'] }}{{ option_value['price'] }})
+                          {% endif %}
+                          </label>
+                      </div></div>
+                      {% endfor %}
+                      </div></div>
+                  </div>
+              {% endif %}
+          {% endfor %} -->
+          {% if (not logged) %}
+          <div class="form-group required">
+            <label class="col-sm-3 control-label" for="input-names"><span data-toggle="tooltip" title="{{ help_name }}"><strong>{{ entry_name }}</strong></span></label>
+            <div class="col-sm-9">
+              <div class="input-group">
+                <input type="text" class="form-control" value="" name="pricealert_name" id="input-names">
+                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group required">
+            <label class="col-sm-3 control-label" for="input-email"><span data-toggle="tooltip" title="{{ help_email }}"><strong>{{ entry_email }}</strong></span></label>
+            <div class="col-sm-9">
+              <div class="input-group">
+                <input type="text" class="form-control" value="" name="pricealert_email" id="input-email">
+                <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          <div class="form-group required">
+            <label class="col-sm-3 control-label" for="input-price"><span data-toggle="tooltip" title="{{ help_price }}"><strong>{{ entry_price }}</strong></span></label>
+            <div class="col-sm-9">
+              <div class="input-group">
+                <input type="number" min="0" onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46 " class="form-control" value="" name="pricealert_price" id="input-price">
+                <span class="input-group-addon"><i class="fa fa-money"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group required">
+            <label class="col-sm-3 control-label" for="input-currency"><span data-toggle="tooltip" title="{{ help_currency }}"><strong>{{ entry_currency }}</strong></span></label>
+            <div class="col-sm-9">
+              <div class="input-group">
+                <select name="pricealert_currency" class="form-control">
+                  {% for currency in currencies %}
+                  <option value="{{ currency['code'] }}" {% if (currency['code'] == code) %} {{ "selected" }} {% endif %}>{{ currency['symbol'] }} {{ currency['title'] }}</option>
+                  {% endfor %}
+                </select>
+                <span class="input-group-addon"><i class="fa fa-usd"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="text-center"><button type="button" class="btn btn-success" id="submitQuote"><i class="fa fa-check"></i> {{ text_submit }}</button></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="button-close" data-dismiss="modal">{{ text_close }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$( document ).ready(function() {
+  {% if (pricealert_allowed) %}
+    $('#content .row .btn-group').append('<button type="button" data-keyboard="true" class="btn btn-success" data-toggle="modal" id="pricealert" data-target="#wkPrice" title="{{ button_suggest }}"><i class="fa fa-balance-scale"></i></button>');
+  {% endif %}
+});
+
+$('#submitQuote').on('click', function () {
+  // var form_data = $('#form-quote').serializeArray();
+   var regex = /^([a-zA-Z0-9\d\-_\s]{2,32})+$/i;
+   var name = true, email = true;
+   var iname = '', iemail = '';
+   var pregex = /^(\d*([.,](?=\d{3}))?\d+)+((?!\2)[.,]\d\d)?$/;
+   $('.alert,.text-danger').remove();
+
+   $('#input-email').parent().parent().parent().removeClass('has-success');
+   $('#input-email').parent().parent().parent().removeClass('has-error');
+   $('#input-names').parent().parent().parent().removeClass('has-success');
+   $('#input-names').parent().parent().parent().removeClass('has-error');
+   $('#input-price').parent().parent().parent().removeClass('has-success');
+   $('#input-price').parent().parent().parent().removeClass('has-error');
+
+    {% if (not logged) %}
+       var iname = $('#input-names').val().trim();
+      if (typeof iname === 'undefined' || !iname || !(regex.test(iname)) || (pregex.test(iname))) {
+        $('#input-names').parent().parent().parent().addClass('has-error');
+        $('#input-names').parent().after('<div class="text-danger">{{ error_name }}</div>');
+        name = false;
+      } else {
+        $('#input-names').parent().parent().parent().addClass('has-success');
+      }
+
+      var iemail = $('#input-email').val();
+
+      regex = /^(([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z]){2,4})+$/;
+
+      if (!iemail || !(regex.test(iemail))) {
+        $('#input-email').parent().parent().parent().addClass('has-error');
+        $('#input-email').parent().after('<div class="text-danger">{{ error_email }}</div>');
+        email = false;
+      } else {
+        $('#input-email').parent().parent().parent().addClass('has-success');
+      }
+    {% endif %}
+
+    var price = $('#input-price').val();
+
+    if (!price) {
+        $('#input-price').parent().parent().parent().addClass('has-error');
+        $('#input-price').parent().after('<div class="text-danger">{{ error_price }}</div>');
+        price = false;
+    } else {
+      $('#input-price').parent().parent().parent().addClass('has-success');
+    }
+
+    var currency = $('select[name=pricealert_currency]').val();
+
+    var product_id = $('input[name=product_id]').val();
+
+    if (name && email && price && currency) {
+      $.ajax({
+          url: 'index.php?route=extension/module/wk_pricealert/submitQuote',
+          type: 'post',
+          data: {name,email,iname, iemail, price, currency, product_id},
+          // data: {name,email,iname, iemail, price, currency, product_id,form_data},
+          dataType: 'json',
+          beforeSend: function() {
+            $('#submitQuote').button('loading');
+          },
+          complete: function() {
+              $('#submitQuote').button('reset');
+          },
+          success: function(json) {
+              $('.alert, .text-danger').remove();
+              if (json['success']) {
+                  $('#input-price').val('');
+                  $('#content').prepend('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+              } else if (json['error']) {
+                  $('#input-price').val('');
+                  $('#content').prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+             }
+             if(json['error_price']) {
+                $('#input-price').parent().parent().parent().addClass('has-error');
+                $('#input-price').parent().after('<div class="text-danger">'+json['error_price']+'</div>');
+              } else if (json['error_iname']) {
+ 	               $('#input-names').parent().parent().parent().addClass('has-error');
+ 	               $('#input-names').parent().after('<div class="text-danger">'+json['error_iname']+'</div>');
+              } else {
+               $('#button-close').trigger('click');
+             }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+              alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+          }
+      });
+    };
+  });
+</script>

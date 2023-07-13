@@ -1,0 +1,117 @@
+<div class="cat-main">
+	<div class="category-tab">
+		<div class="titletab">
+			<div class="container">
+			{# <div class="box-heading hometab-title"><h3>{{ heading_title }}</h3></div> #}
+			<div id="CTab-{{ module }}" class="tab-box-heading">
+				<ul class="nav nav-tabs">
+				{% for category in category %}
+					{% if loop.index0 == 0 %}
+						{% set class = ' class="active"'%}
+					{% else %}
+						{% set class = ''%}
+					{% endif %}
+					<li {{class}}>
+					<a href="#tab-{{loop.index}}" data-toggle="tab">
+						<img src="{{ category.cat_img }}" alt="{{ category.name }}" title="{{ category.name }}" class="img-responsive" />
+						<span>{{category.name}}</span>
+					</a>
+					</li>
+				{% endfor %}
+				</ul>
+			</div>
+			</div>
+		</div>
+		<div class="container">
+		<div class="row">
+			<div class="tab-content">
+				{% for products in categories %}
+				{% if loop.index0 == 0 %}
+					{% set class = ' active in' %}
+				{% else %}
+					{% set class = ''%}
+				{% endif %}
+  				<div class="tab-pane fade {{class}}" id="tab-{{loop.index}}">
+  					{% set productForSlider = 4 %}
+					{% set productCount = products.products|length %}
+					<div class="category-tab {% if productCount > productForSlider %} product-carousel {% endif %}" data-items="4">
+						{% if productCount > productForSlider %}
+							{% set class = ' col-xs-12' %}
+						{% else %}
+							{% set class = ' col-lg-3 col-md-3 col-sm-6 col-xs-12' %}
+						{% endif %}
+						{% for product in products.products %}
+						<div class="product-layout {{class}}">
+							<div class="product-thumb transition">
+								<div class="image">
+								  	{% if product.thumb_swap %}
+										<a href="{{ product.href }}">
+											<img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-responsive" />
+											<img class="img-responsive hover-img" src="{{ product.thumb_swap }}" title="{{ product.name }}" alt="{{ product.name }}"/>
+										</a>
+								  	{% else %}
+									<a href="{{ product.href }}">
+									  	<a href="{{ product.href }}"><img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-responsive" /></a>
+									</a>
+								  	{% endif %}
+
+								  	{% if  product.special %}
+										<div class="sale-text"><span class="section-sale">{{ text_sale }}</span></div>
+									{% endif %}
+
+									<div class="cart_main">
+										<button type="button" class="addcart" title="{{ button_cart }}" onclick="cart.add('{{ product.product_id }}');"></button>
+									</div>	
+
+									<div class="button-group">										
+										<button type="button" class="wishlist" title="{{ button_wishlist }}" onclick="wishlist.add('{{ product.product_id }}');"></button>
+										<button type="button" class="quickview-button" title="{{ button_quickview }}" onclick="quickView.ajaxView('{{ product.href }}');"></button>
+										<button type="button" class="compare" title="{{ button_compare }}" onclick="compare.add('{{ product.product_id }}');"></button>
+									</div>
+
+									{% if product.rating %}
+										<div class="rating">
+											{% for i in 1..5 %}
+												{% if product.rating < i %} <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-2x"></i></span> {% else %} <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span> {% endif %}
+											{% endfor %}
+										</div>
+									{% else %}
+										<div class="rating">
+											{% for i in 1..5 %}
+												<span class="fa fa-stack"><i class="fa fa-star-o fa-stack-2x"></i></span>
+											{% endfor %}
+										</div>
+									{% endif %}
+								</div>
+
+								<div class="thumb-description">
+									<div class="caption">
+										<div class="desc-inner">										
+											<h4 class="product-title"><a href="{{ product.href }}">{{ product.name }}</a></h4>
+										</div>	
+										{% if product.price %}
+										<p class="price">
+										  {% if not product.special %}
+											{{ product.price }}
+										  {% else %}
+											<span class="price-new">{{ product.special }}</span> 
+											<span class="price-old">{{ product.price }}</span>
+										  {% endif %}
+										  {% if product.tax %}
+										  <span class="price-tax">{{ text_tax }} {{ product.tax }}</span>
+										  {% endif %} 
+										</p>
+									  {% endif %}
+									</div>
+								</div>		
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+  				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	</div>
+</div>

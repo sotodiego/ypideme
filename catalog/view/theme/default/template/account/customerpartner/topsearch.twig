@@ -1,0 +1,104 @@
+{{ header }}
+{{ separate_column_left }}
+{% if (separate_view is defined and separate_view) %}
+  <div class="container-fluid" id="content">
+{% else %}
+  <div class="container">
+{% endif %}
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+    <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+    {% endfor %}
+  </ul>
+  <div class="row">{{ column_left }}
+    {% if (column_left and column_right) %}
+    {% set class = 'col-sm-6' %}
+    {% elseif (column_left or column_right) %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+
+    <div id="content" class="{{ class }}">
+        {{ content_top }}
+        <h1>
+          {{ heading_title }}
+          <div class="pull-right">
+            <a href="{{ back }}" data-toggle="tooltip" title="{{ button_back }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+          </div>
+        </h1>
+
+          <legend><i class="fa fa-list"></i> {{ text_list }}</legend>
+            <div class="well">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label class="control-label" for="input-term">{{ entry_term }}</label>
+                      <input type="text" name="filter_term" value="" placeholder="{{ text_term }}" id="input-term" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label" for="input-start">{{ entry_start }}</label>
+                      <input type="text" name="filter_start" value="" placeholder="{{ entry_start }}" id="input-start" class="form-control" />
+                    </div>
+
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label class="control-label" for="input-count">{{ entry_count }}</label>
+                      <input type="text" name="filter_count" value="" placeholder="{{ text_count }}" id="input-count" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label" for="input-limit">{{ entry_limit }}</label>
+                      <input type="text" name="filter_limit" value="" placeholder="{{ entry_limit }}" id="input-start" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label class="control-label" for="input-name">{{ entry_name }}</label>
+                      <input type="text" name="filter_name" value="" placeholder="{{ text_name }}" id="input-name" class="form-control" />
+                    </div>
+                   <div class="form-group">
+                     <div class="btn-group pull-right">
+                       <button onclick="_filter();" class="btn" style="background-color:rgb(34,89,89);color: white;border: 0px none; border-radius: 0px;margin-right:10px;">{{ button_filter }}
+                       <button onclick="_clearFilter();" class="btn" style="background-color:rgb(13,68,8);color: white;border: 0px none; border-radius: 0px;">{{ button_cfilter }}
+                        <input type="hidden" value="{{ ajax_url }}"  id="ajax_url"/>
+                     </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <form method="post" enctype="multipart/form-data" id="form-tosearch">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover">
+                    <thead id="elem_head">
+                      <tr>
+                        <td class="text-center">
+                          <a onclick="sorts('pd.name');" class="{{ order|lower }}">{{ entry_name }}</a>
+                        </td>
+                        <td class="text-center" style="table-layout: fixed;width: 180px;">
+                          <a onclick="sorts('pts.count');" class="{{ order|lower }}">{{ entry_count }}</a>
+                        </td>
+                        <td class="text-center" style="table-layout: fixed;width: 250px;" >
+                          <a onclick="sorts('pts.search_terms');" class="{{ order|lower }}">{{ entry_term }}</a>
+                        </td>
+
+                        <td class="text-center">{{ entry_actions }}</td>
+                      </tr>
+                    </thead>
+                    <tbody id="elem_body">
+
+                    </tbody>
+                    <tfoot id="elem_foot">
+                        <tr><td colspan="11" class="alert-info text-center" id="topsearchFoot"></td></tr>
+                    </tfoot>
+                  </table>
+                </div>
+             </form>
+          </fieldset>
+          {{ content_bottom }}
+      </div>
+    {{ column_right }}
+  </div>
+</div>
+
+{{ footer }}

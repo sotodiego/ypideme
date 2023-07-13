@@ -1,0 +1,212 @@
+{{ header }}{{ separate_column_left }}
+{% if (separate_view is defined and separate_view) %}
+    <div class="container-fluid" id="content">
+{% else %}
+    <div class="container">
+{% endif %}
+        <ul class="breadcrumb">
+            {% for breadcrumb in breadcrumbs %}
+                <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+            {% endfor %}
+        </ul>
+
+        {% if (error_warning) %}
+            <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ error_warning }}</div>
+        {% endif %}
+        {% if (success) %}
+            <div class="alert alert-success"><i class="fa fa-check-circle"> </i> {{ success }}</div>
+        {% endif %}
+        <div class="row">{{ column_left }}
+            {% if (column_left and column_right) %}
+                {% set class = 'col-sm-6' %}
+            {% elseif (column_left or column_right) %}
+                {% set class = 'col-sm-9' %}
+            {% else %}
+                {% set class = 'col-sm-12' %}
+            {% endif %}
+        
+            <div id="content" class="{{ class }}">
+                {{ content_top }}
+                <h1>{{ heading_title }}</h1>
+                <fieldset>
+                    <legend><i class="fa fa-list"></i> {{ heading_title }}</legend>
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="input-group_by" class="control-label">{{ entry_group_by }}</label>
+                                    <select name="filter_display_type" id="display_type" class="form-control">
+                                        <option value="product" {% if filter_display_type is defined and filter_display_type == 'product' %}{{'selected'}}{% endif %}>{{ text_product }}</option>
+                                        <option value="order" {% if filter_display_type is defined and filter_display_type == 'order' %}{{'selected'}}{% endif %}>{{ text_order }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="input-group_by" class="control-label">{{ entry_group_by }}</label>
+                                    <select name="filter_display_group" id="display_group" class="form-control">
+                                        <option value="year" {% if filter_display_group is defined and filter_display_group == 'year' %}{{'selected'}}{% endif %}>{{ text_yearly }}</option>
+                                        <option value="month" {% if filter_display_group is defined and filter_display_group == 'month' %}{{'selected'}}{% endif %}>{{ text_monthly }}</option>
+                                        <option value="week" {% if filter_display_group is defined and filter_display_group == 'week' %}{{'selected'}}{% endif %}>{{ text_weekly }}</option>
+                                        <option value="day" {% if filter_display_group is defined and filter_display_group == 'day' %}{{'selected'}}{% endif %}>{{ text_days }}</option>
+                                    </select>
+                                </div>
+                                <div class="filter_button">
+                                    <a href="{{ reset }}" class="btn btn-danger pull-right" style="margin-left:10px;"><i class="fa fa-reply"></i> {{ button_reset }}</a>
+                                    <button class="btn btn-primary pull-right" id="button-filter"><i class="fa fa-filter"></i> {{ button_filter }}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="table-responsive">
+                    {% if filter_display_type is defined and  filter_display_type == 'product'%}
+                        <table class="table table-bordered table-hover" id="table-product">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        {% if sort == 'c2o.date_added' %}
+                                            <a href="{{ sort_date }}" class="{{ order | lower }}">{{ entry_date_added }}</a>
+                                        {% else %}
+                                            <a href="{{ sort_date }}">{{ entry_date_added }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if sort == 'pd.name' %}
+                                            <a href="{{ sort_name }}" class="{{ order | lower }}">{{ entry_product_name }}</a>
+                                        {% else %}
+                                            <a href="{{ sort_name }}">{{ entry_product_name }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if sort == 'product_total' %}
+                                            <a href="{{ sort_product_total }}" class="{{ order | lower }}">{{ entry_product_total }}</a>
+                                        {% else %}
+                                            <a href="{{ sort_product_total }}">{{ entry_product_total }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if sort == 'seller_amount' %}
+                                            <a href="{{ sort_seller_amount }}" class="{{ order | lower }}">{{ entry_seller_amount }}</a>
+                                        {% else %}
+                                            <a href="{{ sort_seller_amount }}">{{ entry_seller_amount }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if sort == 'admin_amount' %}
+                                            <a href="{{ sort_admin_amount }}" class="{{ order | lower }}">{{ entry_admin_amount }}</a>
+                                        {% else %}
+                                            <a href="{{ sort_admin_amount }}">{{ entry_admin_amount }}</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if income_lists is defined and income_lists %}
+                                    {% for income_list in income_lists %}
+                                       <tr>
+                                           <td>{{ income_list.date_start }}</td>
+                                           <td>{{ income_list.name }}</td>
+                                           <td>{{ income_list.product_total }}</td>
+                                           <td>{{ income_list.seller_amount }}</td>
+                                           <td>{{ income_list.admin_amount }}</td>
+                                       </tr> 
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>  
+                    {% else %}
+                        <table class="table table-bordered table-hover" id="table-order">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        {% if sort == 'c2o.date_added' %}
+                                            <a href="{{ sort_date }}" class="{{ order | lower }}">{{ entry_date_added }}</a>
+                                        {% else %}
+                                            <a href="{{ sort_date }}">{{ entry_date_added }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if sort == 'order_total' %}
+                                            <a href="{{ sort_order_total }}" class="{{ order | lower }}">{{ entry_order_total }}</a>
+                                        {% else %}
+                                            <a href="{{ sort_order_total }}">{{ entry_order_total }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if sort == 'seller_amount' %}
+                                            <a href="{{ sort_seller_amount }}" class="{{ order | lower }}">{{ entry_seller_amount }}</a>
+                                        {% else %}
+                                            <a href="{{ sort_seller_amount }}">{{ entry_seller_amount }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if sort == 'admin_amount' %}
+                                            <a href="{{ sort_admin_amount }}" class="{{ order | lower }}">{{ entry_admin_amount }}</a>
+                                        {% else %}
+                                            <a href="{{ sort_admin_amount }}">{{ entry_admin_amount }}</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if income_lists is defined and income_lists %}
+                                    {% for income_list in income_lists %}
+                                       <tr>
+                                           <td>{{ income_list.date_start }}</td>
+                                           <td>{{ income_list.order_total }}</td>
+                                           <td>{{ income_list.seller_amount }}</td>
+                                           <td>{{ income_list.admin_amount}}</td>
+                                       </tr> 
+                                    {% endfor %}
+                                {% endif %}          
+                            </tbody>
+                        </table>
+                    {% endif %}                    
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 text-left">{{ pagination }}</div>
+                    <div class="col-sm-6 text-right">{{ results }}</div>
+                </div>
+                {{ content_bottom }}
+            </div>
+            {{ column_right }}
+        </div>
+    </div>
+    <script>
+        $(document).on('click', '#button-filter', function() {
+        
+            {% if sort == 'pd.name' %}
+                {% set url_link = 'index.php?route=account/customerpartner/income&sort=pd.name' ~ '&order=' ~ order %}
+            {% elseif sort == 'c2o.date_added' %}
+                {% set url_link = 'index.php?route=account/customerpartner/income&sort=c2o.date_added' ~ '&order=' ~ order %}
+            {% elseif sort == 'product_total' %}
+                {% set url_link = 'index.php?route=account/customerpartner/income&sort=product_total' ~ '&order=' ~ order %}
+            {% elseif sort == 'order_total' %}
+                {% set url_link = 'index.php?route=account/customerpartner/income&sort=order_total' ~ '&order=' ~ order %}
+            {% elseif sort == 'admin_amount' %}
+                {% set url_link = 'index.php?route=account/customerpartner/income&sort=admin_amount' ~ '&order=' ~ order %}
+            {% elseif sort == 'seller_amount' %}
+                {% set url_link = 'index.php?route=account/customerpartner/income&sort=seller_amount' ~ '&order=' ~ order %}
+            {% else %}
+                {% set url_link = 'index.php?route=account/customerpartner/income&order=' ~ order %}
+            {% endif %}
+        
+            var url = '{{ url_link }}';
+
+            var filter_display_type = $('select[name=\'filter_display_type\']').val();
+
+            if (filter_display_type) {
+                url += '&filter_display_type=' + encodeURIComponent(filter_display_type);
+            }
+
+            var filter_display_group = $('select[name=\'filter_display_group\']').val();
+
+            if (filter_display_group) {
+                url += '&filter_display_group=' + encodeURIComponent(filter_display_group);
+            }
+
+            location = url;
+        });        
+    </script>
+    {{ footer }}

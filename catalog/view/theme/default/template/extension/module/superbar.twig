@@ -1,0 +1,226 @@
+{% if (superbar_status) %}
+  <div class="superbar">
+  <div id="user_opener">
+    <span class="opener">
+      <i class="fa fa-users"></i>
+    </span>
+  </div>
+    {% if (upsell_status) %}
+    <button type="button" data-keyboard="true" class="superbar-button" data-toggle="modal" id="wkup" data-target="#wkModal" title="{{ superbar_upsell_tooltip }}"></button>
+    {% endif %}
+    {% if (crosssell_status) %}
+    <button type="button" data-keyboard="true" class="superbar-button" data-toggle="modal" id="wkcross" data-target="#wkModal" title="{{ superbar_crosssell_tooltip }}"></button>
+    {% endif %}
+    {% if (gift_status) %}
+    <button type="button" data-keyboard="true" class="superbar-button" data-toggle="modal" id="wkgift" data-target="#wkModal" title="{{ superbar_gift_tooltip }}"></button>
+    {% endif %}
+    {% if (custom_status) %}
+    <button type="button" class="superbar-button" data-toggle="modal" id="wkcustom" data-target="#wkModal" title="{{ superbar_custom_tooltip }}"></button>
+    {% endif %}
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="wkModal" role="dialog" tabindex='-1'>
+    <div class="modal-dialog modal-lg">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <p class="modal-title" id="wkmodalheader">OFFERS</p>
+          <p class="modal-title" id="wkmodalheader2">OFFERS</p>
+        </div>
+        <div class="modal-body" id="wkPromomodalbody">
+          <i class="fa fa-spinner fa-6 fa-spin"></i>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<style type="text/css">
+  .superbar{
+    height: auto;
+    background-color: {{ superbar_color }};
+    background-image: url("{{ superbar_design_layout_icon }}");
+    border: 2px {{ superbar_border_style~' '~superbar_border_color }};
+    text-align: center;
+    position: fixed;
+    {{ hposition }}: {{ hper }}%;
+    {{ vposition }}: {{ vper }}%;
+    width: {{ superbar_width }}px;
+    z-index: 1000;
+    cursor: move;
+    display: none;
+  }
+  .superbar button{
+    margin: 1% 2%;
+    background-repeat: no-repeat;
+    width: {{ bwidth }}px;
+    height: {{ bheight }}px;
+    background-color: {{ superbar_button_color }};
+    border: none;
+  }
+
+  .opener {
+    display: block;
+    height: 100%;
+    padding: 6px;
+    width: 100%;
+  }
+  #user_opener {
+      background: #fefefe none repeat scroll 0 0;
+      border: 3px solid;
+      border-bottom-left-radius: 20px;
+      border-top-left-radius: 20px;
+      cursor: pointer;
+      height: 38px;
+      left: -18%;
+      overflow: hidden;
+      position: absolute;
+      text-align: center;
+      top: 22%;
+      width: 50px;
+      z-index: 1000;
+      display: none;
+  }
+
+  #wkup {
+    background-image: url("{{ superbar_upsell_icon }}");
+  }
+  #wkcross {
+    background-image: url("{{ superbar_crosssell_icon }}");
+  }
+  #wkgift {
+    background-image: url("{{ superbar_gift_icon }}");
+  }
+  #wkcustom {
+    background-image: url("{{ superbar_custom_icon }}");
+  }
+  #wkPromomodalbody {
+    text-align: center;
+  }
+  #wkPromomodalbody > .fa {
+    font-size: 40px;
+  }
+  @media (max-width: 767px) {
+    .superbar{
+      right: -{{ superbar_width }}px;
+    }
+    #user_opener {
+      display: block;
+    }
+  }
+</style>
+<script type="text/javascript">
+
+  var timeout = {{ superbar_time }} * 1000;
+  var click = false;
+  var up_inter = [], cross_inter = [], gift_inter = [];
+
+    $( document ).ready(function() {
+      setTimeout(function(){ $(".superbar").fadeIn(2000); }, timeout);
+    });
+
+  $(".superbar").draggable();
+
+  $('#user_opener').click(function(){
+    if($('.superbar').css('right') != '0px'){
+      $('.superbar').animate({right:"0px"});
+    } else {
+      $('.superbar').animate({right:"-{{ superbar_width }}px"});
+    }
+  })
+
+  var product_id = $('input[name=\'product_id\']').val();
+
+  var click_id = 0;
+
+  $(document).on('click',".superbar-button",function () {
+    click = true;
+    if ($(this).attr('id').trim() == 'wkup') {
+      click_id = 1;
+
+      $(document).find("#wkModal #wkmodalheader").html('{{ upsell_title }}');
+        $(document).find("#wkModal #wkmodalheader2").html('{{ uheader1 }}');
+      $(document).find("#wkPromomodalbody").html('<i class="fa fa-spinner fa-6 fa-spin"></i>');
+      $(document).find("#wkPromomodalbody").load("index.php?route=account/customerpartner/upsell/info&type=1&product_id=" + product_id);
+
+    } else if ($(this).attr('id') == 'wkcross') {
+      click_id = 2;
+      $(document).find("#wkModal #wkmodalheader").html('{{ crosssell_title }}');
+        $(document).find("#wkModal #wkmodalheader2").html('{{ cheader1 }}');
+      $("#wkPromomodalbody").html('<i class="fa fa-spinner fa-6 fa-spin"></i>');
+      $("#wkPromomodalbody").load("index.php?route=account/customerpartner/crosssell/info&type=2&product_id=" + product_id);
+
+    } else if ($(this).attr('id') == 'wkcustom') {
+      $(document).find("#wkmodalheader").html("Custom Products");
+      $(document).find("#wkPromomodalbody").html('<i class="fa fa-spinner fa-6 fa-spin"></i>');
+      $(document).find("#wkPromomodalbody").load("index.php?route=account/customerpartner/customsell/info&type=4&product_id=" + product_id);
+    };
+
+  })
+
+  var refresh_time = {{ refresh_time }} * 1000;
+  var struck_time = {{ struck_time }} * 1000;
+
+  var refreshBar = setInterval('autoRefresh()', refresh_time);
+  var fadeBar = setInterval('fadeoutSuperbar()', struck_time);
+
+  function fadeoutSuperbar () {
+    if (!click) {
+      $(".superbar").fadeOut(2000);
+      clearInterval(fadeBar);
+      clearInterval(refreshBar);
+    };
+  }
+
+  function autoRefresh () {
+    if (click_id) {
+      if (click_id == '1') {
+        $("#wkmodalheader").html('{{ uheader1 }}');
+        $("#wkmodalheader2").html('{{ uheader2 }}');
+        $("#wkPromomodalbody").html('<i class="fa fa-spinner fa-6 fa-spin"></i>');
+        for (var i = 0; i < up_inter.length; i++) {
+          var temp = eval(up_inter[i]);
+          clearInterval(temp);
+        }
+        up_inter = [];
+        $("#wkPromomodalbody").load("index.php?route=account/customerpartner/upsell/info&type=1&product_id=" + product_id);
+      } else if (click_id == '2') {
+        $("#wkmodalheader").html('{{ cheader1 }}');
+        $("#wkmodalheader2").html('{{ cheader2 }}');
+        $("#wkPromomodalbody").html('<i class="fa fa-spinner fa-6 fa-spin"></i>');
+        for (var i = 0; i < up_inter.length; i++) {
+          var temp = eval(up_inter[i]);
+          clearInterval(temp);
+        }
+        cross_inter = [];
+        $("#wkPromomodalbody").load("index.php?route=account/customerpartner/crosssell/info&type=2&product_id=" + product_id);
+      }
+    };
+    $.ajax({
+      url: 'index.php?route=extension/module/superbar/ajax&product_id=' + product_id,
+      dataType: 'json',
+      success: function(json) {
+        if (!json['upsell_status']) {
+          $('#wkup').remove();
+        };
+        if (!json['crosssell_status']) {
+          $('#wkcross').remove();
+        };
+        if (!json['gift_status']) {
+          $('#wkgift').remove();
+        };
+        if (!json['superbar_status']) {
+          $('.superbar').remove();
+
+        };
+      }
+    });
+  }
+</script>
+
+{% endif %}
